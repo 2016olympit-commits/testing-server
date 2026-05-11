@@ -5,54 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Контрольна робота з алгебри</title>
     <style>
-        :root { --blue: #005088; --light-bg: #f4f7f9; --text: #333; }
-        body { font-family: 'Segoe UI', sans-serif; background: #e0e6ed; display: flex; justify-content: center; padding: 20px; margin: 0; }
+        :root { --primary: #1e40af; --bg: #f8fafc; --card: #ffffff; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #e2e8f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .quiz-container { background: var(--card); width: 100%; max-width: 650px; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; flex-direction: column; min-height: 520px; }
         
-        .quiz-card { background: white; width: 100%; max-width: 700px; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; min-height: 450px; display: flex; flex-direction: column; }
-        
-        /* Стиль для дробів */
-        .fraction { display: inline-block; vertical-align: middle; text-align: center; font-size: 0.9em; margin: 0 3px; }
-        .fraction span { display: block; padding: 0 5px; }
+        /* Стиль для дробу */
+        .fraction { display: inline-block; vertical-align: middle; text-align: center; font-size: 0.9em; margin: 0 4px; line-height: 1.1; }
+        .fraction span { display: block; padding: 0 4px; }
         .fraction .bottom { border-top: 1.5px solid black; }
 
-        .step { display: none; }
-        .active { display: block; }
-
-        h1 { color: var(--blue); font-size: 24px; margin-bottom: 25px; text-align: center; }
-        p { font-size: 18px; line-height: 1.6; margin-bottom: 20px; }
-
-        input[type="text"], select { width: 100%; padding: 12px; margin-bottom: 20px; border: 2px solid #ddd; border-radius: 6px; font-size: 16px; }
+        .step { display: none; flex-direction: column; height: 100%; }
+        .active { display: flex; }
         
-        .option { background: #f9f9f9; border: 2px solid #eee; padding: 15px; margin-bottom: 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; display: block; }
-        .option:hover { background: #f0f4f8; border-color: var(--blue); }
-        .option input { margin-right: 10px; transform: scale(1.2); }
+        h1 { color: var(--primary); text-align: center; font-size: 24px; margin-bottom: 20px; }
+        p { font-size: 19px; line-height: 1.6; color: #334155; margin-bottom: 25px; }
 
-        .nav-btns { margin-top: auto; display: flex; gap: 10px; padding-top: 20px; }
-        button { flex: 1; padding: 15px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-next { background: var(--blue); color: white; }
-        .btn-prev { background: #ccc; color: #333; }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        input[type="text"], select { width: 100%; padding: 14px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+        
+        .option { background: #f1f5f9; border: 2px solid #e2e8f0; padding: 12px 15px; margin-bottom: 12px; border-radius: 10px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; }
+        .option:hover { border-color: var(--primary); background: #eff6ff; }
+        .option input { margin-right: 15px; transform: scale(1.3); flex-shrink: 0; }
+        .option-text { font-size: 18px; display: flex; align-items: center; flex-wrap: wrap; }
 
-        .progress { text-align: right; font-size: 14px; color: #888; margin-bottom: 10px; }
+        .nav-btns { margin-top: auto; display: flex; gap: 12px; padding-top: 30px; }
+        button { flex: 1; padding: 16px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .btn-next { background: var(--primary); color: white; }
+        .btn-prev { background: #94a3b8; color: white; }
+        .progress { font-size: 14px; color: #64748b; text-align: right; margin-bottom: 10px; font-weight: 600; }
     </style>
 </head>
 <body>
 
-<div class="quiz-card">
+<div class="quiz-container">
     <form id="quizForm" action="https://script.google.com/macros/s/AKfycbzYA7OhyzaZ9XET6uGltHkVRH1TE-jUcz_Z9IwvrdL8ZC5THNspgIjWSb2q6HZCMOcYmQ/exec" method="POST">
         <input type="hidden" name="total_score" id="totalScoreInput">
 
         <div class="step active" id="step-0">
-            <h1>Контрольна робота: Варіант 1</h1>
-            <label>Оберіть клас:</label>
-            <select name="class_name" required>
-                <option value="">-- Клас --</option>
-                <option value="8-А">8-А</option>
-                <option value="8-Б">8-Б</option>
-                <option value="8-В">8-В</option>
-            </select>
-            <label>Прізвище та Ім'я:</label>
-            <input type="text" name="student_name" placeholder="Введіть ПІП" required>
+            <h1>Контрольна робота з алгебри<br>Варіант 1</h1>
+            <div style="margin-top: 20px;">
+                <label style="display:block; margin-bottom:8px; font-weight:600;">Ваш клас:</label>
+                <select name="class_name" required>
+                    <option value="">Оберіть клас...</option>
+                    <option value="8-А">8-А</option><option value="8-Б">8-Б</option>
+                    <option value="8-В">8-В</option><option value="8-Г">8-Г</option>
+                </select>
+                <label style="display:block; margin-top:15px; margin-bottom:8px; font-weight:600;">Прізвище та Ім'я:</label>
+                <input type="text" name="student_name" placeholder="Введіть ПІП" required>
+            </div>
             <div class="nav-btns">
                 <button type="button" class="btn-next" onclick="move(1)">Почати тест</button>
             </div>
@@ -62,7 +61,7 @@
 
         <div class="step" id="step-final">
             <h1>Тест завершено</h1>
-            <p style="text-align:center;">Ви відповіли на всі 20 запитань. Натисніть кнопку нижче, щоб здати роботу.</p>
+            <p style="text-align:center;">Робота готова до відправки. Перевір дані та натискай кнопку.</p>
             <div class="nav-btns">
                 <button type="button" class="btn-prev" onclick="move(20)">Назад</button>
                 <button type="submit" class="btn-next" id="submitBtn">Здати роботу</button>
@@ -72,69 +71,71 @@
 </div>
 
 <script>
-    // Функція для створення дробу в тексті
-    function frac(num, den) {
-        return `<span class="fraction"><span>${num}</span><span class="bottom">${den}</span></span>`;
+    // Функція для створення візуального дробу
+    function f(n, d) {
+        return `<span class="fraction"><span>${n}</span><span class="bottom">${d}</span></span>`;
     }
 
     const questions = [
-        { q: `При яких значеннях змінної вираз ${frac('x - 3', 'x + 5')} не має змісту?`, type: "test", options: ["3", "-5", "5", "0"], correct: "-5" },
-        { q: `Виконайте дію: ${frac('2', 'x')} + ${frac('3', 'y')}`, type: "test", options: ["5/(x+y)", "5/xy", "(2y+3x)/xy", "6/xy"], correct: "(2y+3x)/xy" },
+        { q: `При яких значеннях змінної вираз ${f('x - 3', 'x + 5')} не має змісту?`, type: "test", options: ["3", "-5", "5", "0"], correct: "-5" },
+        { q: `Виконайте дію додавання: ${f('2', 'x')} + ${f('3', 'y')}`, type: "test", 
+          options: [f('5', 'x+y'), f('5', 'xy'), f('2y+3x', 'xy'), f('6', 'xy')], correct: "(2y+3x)/xy" },
         { q: "Спростіть вираз: (a⁻²)⁴", type: "test", options: ["a⁻⁸", "a⁻²", "a²", "a⁻¹⁵"], correct: "a⁻⁸" },
         { q: "Винесіть множник з-під знака кореня: √50", type: "test", options: ["5√2", "2√5", "25√2", "10√5"], correct: "5√2" },
-        { q: "Розмір деталі 2,5 * 10⁻⁶ м. Запишіть у вигляді десяткового дробу.", type: "test", options: ["0,000025", "0,0000025", "0,00025", "0,0025"], correct: "0,0000025" },
-        { q: "Площа вірусу в 10⁴ разів менша за клітину (10⁻⁸). Яка площа вірусу?", type: "test", options: ["10⁻⁴", "10⁻¹²", "10⁻³²", "10⁴"], correct: "10⁻¹²" },
-        { q: "Форма квадрата зі стороною √50 см. Чи влізе вона в ширину 7 см?", type: "test", options: ["Так", "Ні", "Впритик", "Невідомо"], correct: "Ні" },
-        { q: `Як зміниться освітленість E = ${frac('k', 'r²')}, якщо відстань r збільшити у 3 рази?`, type: "test", options: ["Збільшиться у 3", "Зменшиться у 3", "Зменшиться у 9", "Не зміниться"], correct: "Зменшиться у 9" },
-        { q: "Сума чисел 60, одне на 2 більше. Рівняння для меншого x:", type: "test", options: ["x+(x+2)=60", "5x+5(x+2)=60", "x/5 + (x+2)/5 = 60", "x*(x+2)=60"], correct: "x+(x+2)=60" },
-        { q: "Обчисліть 20% від 50.", type: "open", correct: "10" },
-        { q: `Собівартість C = ${frac('5000+20n', 'n')}. Яка ціна при n=1000?`, type: "open", correct: "25" },
+        { q: "Розмір деталі 2,5 * 10⁻⁶ м. Запишіть як десятковий дріб:", type: "test", options: ["0,000025", "0,0000025", "0,00025", "0,0025"], correct: "0,0000025" },
+        { q: "Площа вірусу в 10⁴ разів менша за клітину (10⁻⁸ м²). Яка вона?", type: "test", options: ["10⁻⁴", "10⁻¹²", "10⁻³²", "10⁴"], correct: "10⁻¹²" },
+        { q: "Сторона квадрата √50 см. Чи влізе він у духовку шириною 7 см?", type: "test", options: ["Так", "Ні", "Впритик", "Невідомо"], correct: "Ні" },
+        { q: `Як зміниться Е = ${f('k', 'r²')}, якщо відстань збільшити у 3 рази?`, type: "test", options: ["Збільшиться у 3", "Зменшиться у 3", "Зменшиться у 9", "Не зміниться"], correct: "Зменшиться у 9" },
+        { q: "Сума чисел 60, одне на 2 більше. Рівняння для меншого x:", type: "test", options: ["x+(x+2)=60", "5x+5(x+2)=60", "x/5+x/5=60", "x*(x+2)=60"], correct: "x+(x+2)=60" },
+        { q: "Обчисліть 20% від 50:", type: "open", correct: "10" },
+        { q: `Собівартість C = ${f('5000 + 20n', 'n')}. Знайдіть С, якщо n = 1000:`, type: "open", correct: "25" },
         { q: "Обчисліть: √225 - √64", type: "open", correct: "7" },
-        { q: "Чек 1200 грн на 4 особи. Як зміниться сума, якщо прийде 8 осіб?", type: "open", correct: "зменшиться у 2 рази" },
-        { q: "У скільки разів бактерія (10⁻⁵) довша за вірус (10⁻⁷)?", type: "open", correct: "100" },
-        { q: "Знайдіть більший корінь рівняння: 3x² - 5x + 2 = 0", type: "open", correct: "1" },
-        { q: "Число -3 — корінь x² + px - 12 = 0. Знайдіть другий корінь:", type: "open", correct: "4" },
+        { q: "Чек 1200 грн на 4 особи. Як зміниться частка, якщо людей стане 8?", type: "open", correct: "зменшиться у 2 рази" },
+        { q: "Бактерія 10⁻⁵ м, вірус 10⁻⁷ м. У скільки разів бактерія довша?", type: "open", correct: "100" },
+        { q: "Знайдіть більший корінь рівняння 3x² - 5x + 2 = 0", type: "open", correct: "1" },
+        { q: "Число -3 є коренем x² + px - 12 = 0. Знайдіть другий корінь:", type: "open", correct: "4" },
         { q: "Ціна 1200 грн, знижка 15%. Яка нова ціна?", type: "open", correct: "1020" },
         { q: "Площа 40 м², довжина на 3 м більша за ширину. Знайдіть ширину:", type: "open", correct: "5" },
-        { q: "Гра за 720 грн. З +2 людьми внесок менший на 20 грн. Скільки було людей?", type: "open", correct: "8" },
-        { q: "Максим робить роботу за 10 год, Андрій за 15 год. Час разом:", type: "open", correct: "6" }
+        { q: "Гра за 720 грн. З +2 людьми внесок менший на 20 грн. Скільки було друзів?", type: "open", correct: "8" },
+        { q: "Максим — 10 год, Андрій — 15 год. Час спільної роботи:", type: "open", correct: "6" }
     ];
 
     const container = document.getElementById('questions-container');
     questions.forEach((item, i) => {
-        const stepNum = i + 1;
+        const n = i + 1;
         const div = document.createElement('div');
         div.className = 'step';
-        div.id = `step-${stepNum}`;
+        div.id = `step-${n}`;
         div.innerHTML = `
-            <div class="progress">Питання ${stepNum} з 20</div>
-            <h1>Завдання ${stepNum}</h1>
+            <div class="progress">Завдання ${n} з 20</div>
+            <h1>Запитання ${n}</h1>
             <p>${item.q}</p>
             ${item.type === 'test' ? 
-                item.options.map(opt => `
+                item.options.map(o => `
                     <label class="option">
-                        <input type="radio" name="q${i}" value="${opt}"> ${opt}
+                        <input type="radio" name="q${i}" value="${o.replace(/<[^>]*>/g, '')}"> 
+                        <span class="option-text">${o}</span>
                     </label>`).join('') :
-                `<input type="text" name="q${i}" placeholder="Введіть відповідь...">`
+                `<input type="text" name="q${i}" placeholder="Твоя відповідь...">`
             }
             <div class="nav-btns">
-                <button type="button" class="btn-prev" onclick="move(${stepNum - 1})">Назад</button>
-                <button type="button" class="btn-next" onclick="move(${stepNum + 1})">Далі</button>
+                <button type="button" class="btn-prev" onclick="move(${n - 1})">Назад</button>
+                <button type="button" class="btn-next" onclick="move(${n + 1})">Далі</button>
             </div>
         `;
         container.appendChild(div);
     });
 
-    let currentStep = 0;
-    function move(step) {
-        if (step > currentStep && currentStep === 0) {
+    let current = 0;
+    function move(to) {
+        if (to > current && current === 0) {
             const name = document.querySelector('[name="student_name"]').value;
-            const cls = document.querySelector('[name="class_name"]').value;
-            if (!name || !cls) return alert("Заповніть дані!");
+            if (!name || name.length < 3) return alert("Вкажіть ПІП!");
         }
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-        document.getElementById(`step-${step > 20 ? 'final' : step}`).classList.add('active');
-        currentStep = step;
+        document.getElementById(`step-${to > 20 ? 'final' : to}`).classList.add('active');
+        current = to;
+        window.scrollTo(0,0);
     }
 
     document.getElementById('quizForm').onsubmit = function(e) {
@@ -146,14 +147,15 @@
         questions.forEach((item, i) => {
             const input = this.elements[`q${i}`];
             let ans = item.type === 'test' ? (Array.from(input).find(r => r.checked)?.value || "") : input.value.trim();
-            if (ans.toLowerCase() === item.correct.toLowerCase()) score++;
+            // Спеціальна логіка порівняння для дробів
+            let correctVal = item.correct;
+            if (ans.toLowerCase() === correctVal.toLowerCase()) score++;
         });
 
         document.getElementById('totalScoreInput').value = score + " з 20";
-        
         fetch(this.action, { method: 'POST', body: new URLSearchParams(new FormData(this)) })
         .then(() => {
-            document.querySelector('.quiz-card').innerHTML = `<h1 style="color:green">✅ Роботу здано!</h1><p style="text-align:center">Результат збережено.</p>`;
+            document.querySelector('.quiz-container').innerHTML = `<h1 style="color:#16a34a; margin-top:50px;">✅ Роботу здано!</h1><p style="text-align:center">Результат відправлено вчителю.</p>`;
         });
     };
 </script>
