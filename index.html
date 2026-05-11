@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Контрольна робота з алгебри</title>
     <style>
-        :root { --primary: #1e40af; --bg: #f8fafc; --card: #ffffff; }
+        :root { --primary: #1e40af; --bg: #f8fafc; --card: #ffffff; --error: #dc2626; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: #e2e8f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
         .quiz-container { background: var(--card); width: 100%; max-width: 650px; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; flex-direction: column; min-height: 520px; }
         
@@ -19,18 +19,20 @@
         h1 { color: var(--primary); text-align: center; font-size: 24px; margin-bottom: 30px; }
         p.question-text { font-size: 20px; line-height: 1.6; color: #1e293b; margin-bottom: 25px; font-weight: 500; }
 
-        input[type="text"], select { width: 100%; padding: 14px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+        input[type="text"], select { width: 100%; padding: 14px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 16px; box-sizing: border-box; outline: none; }
+        input[type="text"]:focus { border-color: var(--primary); }
         
         .option { background: #f1f5f9; border: 2px solid #e2e8f0; padding: 15px; margin-bottom: 12px; border-radius: 10px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; }
         .option:hover { border-color: var(--primary); background: #eff6ff; }
         .option input { margin-right: 15px; transform: scale(1.3); flex-shrink: 0; }
-        .option-text { font-size: 18px; display: flex; align-items: center; flex-wrap: wrap; }
 
         .nav-btns { margin-top: auto; display: flex; gap: 12px; padding-top: 30px; }
         button { flex: 1; padding: 16px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; }
         .btn-next { background: var(--primary); color: white; }
         .btn-prev { background: #94a3b8; color: white; }
-        .progress-bar { font-size: 14px; color: #64748b; text-align: center; margin-bottom: 20px; letter-spacing: 1px; text-transform: uppercase; }
+        
+        .progress-bar { font-size: 14px; color: #64748b; text-align: center; margin-bottom: 20px; font-weight: 600; }
+        .alert-box { color: var(--error); background: #fef2f2; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; border: 1px solid #fee2e2; }
     </style>
 </head>
 <body>
@@ -40,16 +42,16 @@
         <input type="hidden" name="Разом_балів" id="totalScoreInput">
 
         <div class="step active" id="step-0">
-            <h1>Контрольна робота №1<br>Варіант 1</h1>
+            <h1>Контрольна робота з алгебри</h1>
             <div style="margin-top: 10px;">
                 <label style="display:block; margin-bottom:8px; font-weight:600;">Ваш клас:</label>
-                <select name="Клас" required>
+                <select name="Клас" id="student_class" required>
                     <option value="">Оберіть...</option>
                     <option value="8-А">8-А</option><option value="8-Б">8-Б</option>
                     <option value="8-В">8-В</option><option value="8-Г">8-Г</option>
                 </select>
                 <label style="display:block; margin-top:15px; margin-bottom:8px; font-weight:600;">Прізвище та Ім'я:</label>
-                <input type="text" name="Учень" placeholder="Наприклад: Іваненко Дмитро" required>
+                <input type="text" name="Учень" id="student_name" placeholder="Наприклад: Шевченко Андрій" required>
             </div>
             <div class="nav-btns">
                 <button type="button" class="btn-next" onclick="move(1)">Почати тест</button>
@@ -59,11 +61,12 @@
         <div id="questions-container"></div>
 
         <div class="step" id="step-final">
-            <h1>Тест завершено</h1>
-            <p style="text-align:center;">Ви відповіли на всі запитання. Натисніть кнопку нижче, щоб здати роботу на перевірку.</p>
+            <h1>Перевірка відповідей</h1>
+            <div id="validation-alert" class="alert-box"></div>
+            <p id="final-status-text" style="text-align:center;"></p>
             <div class="nav-btns">
-                <button type="button" class="btn-prev" onclick="move(questions.length)">Назад</button>
-                <button type="submit" class="btn-next" id="submitBtn">Здати роботу</button>
+                <button type="button" class="btn-prev" onclick="move(questions.length)">Повернутись до питань</button>
+                <button type="submit" class="btn-next" id="submitBtn" disabled>Здати роботу</button>
             </div>
         </div>
     </form>
@@ -71,7 +74,6 @@
 
 <script>
     function f(n, d) { return `<span class="fraction"><span>${n}</span><span class="bottom">${d}</span></span>`; }
-    
     function shuffle(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -88,7 +90,7 @@
         { id: 5, q: "Розмір деталі 2,5 * 10⁻⁶ м. Який це десятковий дріб?", type: "test", options: ["0,000025", "0,0000025", "0,00025", "0,0025"], correct: "0,0000025" },
         { id: 6, q: "Площа вірусу в 10⁴ менша за клітину (10⁻⁸ м²). Яка вона?", type: "test", options: ["10⁻⁴", "10⁻¹²", "10⁻³²", "10⁴"], correct: "10⁻¹²" },
         { id: 7, q: "Сторона квадрата √50 см. Чи влізе він у ширину 7 см?", type: "test", options: ["Так", "Ні", "Впритик", "Невідомо"], correct: "Ні" },
-        { id: 8, q: `Як зміниться Е = ${f('k', 'r²')}, якщо відстань збільшити у 3 рази?`, type: "test", options: ["Збільшиться у 3", "Зменшиться у 3", "Зменшиться у 9", "Не зміниться"], correct: "Зменшиться у 9" },
+        { id: 8, q: `Як зміниться Е = ${f('k', 'r²')}, якщо відстань r збільшити у 3 рази?`, type: "test", options: ["Збільшиться у 3", "Зменшиться у 3", "Зменшиться у 9", "Не зміниться"], correct: "Зменшиться у 9" },
         { id: 9, q: "Сума чисел 60, одне на 2 більше. Рівняння для меншого x:", type: "test", options: ["x+(x+2)=60", "5x+5(x+2)=60", "x/5+x/5=60", "x*(x+2)=60"], correct: "x+(x+2)=60" },
         { id: 10, q: "Обчисліть 20% від 50:", type: "open", correct: "10" },
         { id: 11, q: `Собівартість C = ${f('5000 + 20n', 'n')}. Знайдіть С при n = 1000:`, type: "open", correct: "25" },
@@ -122,7 +124,7 @@
                     <span class="option-text">${o}</span>
                 </label>`).join('');
         } else {
-            inputs = `<input type="text" name="${nameInSheet}" placeholder="Ваша відповідь тут...">`;
+            inputs = `<input type="text" name="${nameInSheet}" placeholder="Напишіть вашу відповідь...">`;
         }
 
         div.innerHTML = `
@@ -140,13 +142,49 @@
     let current = 0;
     function move(to) {
         if (to > current && current === 0) {
-            if (!document.querySelector('[name="Учень"]').value) return alert("Будь ласка, вкажіть своє ім'я!");
+            if (!document.getElementById('student_name').value || !document.getElementById('student_class').value) {
+                return alert("Спершу вкажіть прізвище та оберіть клас!");
+            }
         }
+        
+        if (to > shuffled.length) {
+            checkCompletion();
+        }
+
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-        let targetId = to > shuffled.length ? 'step-final' : `step-${to}`;
+        let targetId = to > shuffled.length ? 'step-final' : (to < 0 ? 'step-0' : `step-${to}`);
         document.getElementById(targetId).classList.add('active');
         current = to;
         window.scrollTo(0,0);
+    }
+
+    function checkCompletion() {
+        let unanswered = [];
+        shuffled.forEach((item, i) => {
+            const input = document.getElementsByName(`Завдання_${item.id}`);
+            let answered = false;
+            if (item.type === 'test') {
+                answered = Array.from(input).some(r => r.checked);
+            } else {
+                answered = input[0].value.trim() !== "";
+            }
+            if (!answered) unanswered.push(i + 1);
+        });
+
+        const alertBox = document.getElementById('validation-alert');
+        const submitBtn = document.getElementById('submitBtn');
+        const statusText = document.getElementById('final-status-text');
+
+        if (unanswered.length > 0) {
+            alertBox.style.display = "block";
+            alertBox.innerHTML = `<strong>Увага!</strong> Ви не відповіли на питання: ${unanswered.join(", ")}. <br> Будь ласка, поверніться та завершіть роботу.`;
+            statusText.innerText = "Кнопка відправки заблокована до завершення всіх завдань.";
+            submitBtn.disabled = true;
+        } else {
+            alertBox.style.display = "none";
+            statusText.innerHTML = "<span style='color:green; font-weight:bold;'>Чудово! Всі завдання виконано. Тепер ви можете здати роботу.</span>";
+            submitBtn.disabled = false;
+        }
     }
 
     document.getElementById('quizForm').onsubmit = function(e) {
@@ -164,9 +202,9 @@
         document.getElementById('totalScoreInput').value = score;
         fetch(this.action, { method: 'POST', body: new URLSearchParams(new FormData(this)) })
         .then(() => {
-            document.querySelector('.quiz-container').innerHTML = `<div style="text-align:center">
-                <h1 style="color:#16a34a">✅ Успішно!</h1>
-                <p>Твої відповіді прийнято. Гарного дня!</p>
+            document.querySelector('.quiz-container').innerHTML = `<div style="text-align:center; padding: 40px 0;">
+                <h1 style="color:#16a34a">✅ Готово!</h1>
+                <p>Твої результати успішно відправлені вчителю.</p>
             </div>`;
         });
     };
