@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест з алгебри: Автоперевірка</title>
+    <style>
+        :root { --primary: #2563eb; --bg: #f8fafc; --text: #1e293b; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: var(--primary); }
+        .question { margin-bottom: 25px; padding: 15px; border-left: 4px solid var(--primary); background: #f1f5f9; border-radius: 0 8px 8px 0; }
+        .options { list-style: none; padding: 0; }
+        input[type="text"] { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; }
+        button { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 6px; cursor: pointer; width: 100%; font-size: 18px; margin-top: 20px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📝 Контрольна робота: Варіант 2</h1>
+    
+    <form id="quizForm" action="ТВОЄ_ПОСИЛАННЯ_FORMSPREE" method="POST">
+        <div style="margin-bottom: 20px;">
+            <label><b>Прізвище та Ім'я:</b></label>
+            <input type="text" name="student_name" required>
+        </div>
+
+        <div id="questionsContainer"></div>
+
+        <input type="hidden" name="total_score" id="totalScoreInput">
+        
+        <button type="submit">Здати роботу</button>
+    </form>
+
+    <div id="thanks" class="hidden" style="text-align:center;">
+        <h2>Дякуємо, роботу здано!</h2>
+        <p>Результати надіслані вчителю.</p>
+    </div>
+</div>
+
+<script>
+    // База питань та правильних відповідей
+    const questions = [
+        { q: "При якому значенні x вираз (x+4)/(x-7) не має змісту?", type: "test", options: ["-4", "0", "7", "-7"], correct: "7" },
+        { q: "Скоротіть дріб 10a³b²/15ab⁴:", type: "test", options: ["2a²/3b²", "2a²/3b", "5a²/b²", "2a³/3b²"], correct: "2a²/3b²" },
+        { q: "Виконайте додавання дробів 3/a + 5/b:", type: "test", options: ["8/(a+b)", "(3b+5a)/ab", "15/ab", "(3a+5b)/ab"], correct: "(3b+5a)/ab" },
+        { q: "Спростіть вираз x⁻⁷ * x⁴:", type: "test", options: ["x⁻¹¹", "x³", "x⁻³", "x⁻²⁸"], correct: "x⁻³" },
+        { q: "Піднесіть до степеня (m⁻²)⁻⁴:", type: "test", options: ["m⁻⁶", "m⁸", "m⁻⁸", "m⁶"], correct: "m⁸" },
+        { q: "Запишіть число 0,000034 у стандартному вигляді:", type: "test", options: ["3,4*10⁻⁴", "34*10⁻⁶", "3,4*10⁻⁵", "0,34*10⁻⁴"], correct: "3,4*10⁻⁵" },
+        { q: "Знайдіть значення виразу 2⁻³:", type: "test", options: ["-6", "-8", "0,125", "0,25"], correct: "0,125" },
+        { q: "Обчисліть √144 - √49:", type: "test", options: ["5", "10", "13", "7"], correct: "5" },
+        { q: "Винесіть множник з-під знака кореня √72:", type: "test", options: ["2√6", "6√2", "36√2", "3√8"], correct: "6√2" },
+        { q: "Оберіть правильну нерівність:", type: "test", options: ["4√3 < √45", "4√3 = √45", "4√3 > √45", "4√3 < 6"], correct: "4√3 > √45" },
+        { q: "Спростіть вираз 5/√5:", type: "test", options: ["5", "1", "√5", "25"], correct: "√5" },
+        { q: "Які корені має рівняння x² = 0,49?", type: "test", options: ["0,7", "0,07 та -0,07", "0,7 та -0,7", "немає"], correct: "0,7 та -0,7" },
+        { q: "Укажіть коефіцієнти a, b, c для рівняння 5x - 2x² + 3 = 0:", type: "test", options: ["a=5, b=-2, c=3", "a=-2, b=5, c=3", "a=2, b=5, c=3", "a=-2, b=3, c=5"], correct: "a=-2, b=5, c=3" },
+        { q: "Обчисліть дискримінант D для рівняння x² - 4x + 3 = 0:", type: "open", correct: "4" },
+        { q: "Знайдіть менший корінь рівняння x² + 3x - 4 = 0:", type: "open", correct: "-4" },
+        { q: "Знайдіть суму коренів рівняння x² - 7x + 10 = 0:", type: "open", correct: "7" },
+        { q: "Товар коштував 800 грн. Ціна знизилася на 20%. Нова ціна:", type: "open", correct: "640" },
+        { q: "Площа прямокутника 60 м². Довжина на 4 м більша за ширину. Ширина:", type: "open", correct: "6" },
+        { q: "У скільки разів 10⁻⁴ більша за 10⁻⁶?", type: "open", correct: "100" },
+        { q: "Майстер 10 год, учень 15 год. Час спільної роботи (год):", type: "open", correct: "6" }
+    ];
+
+    const container = document.getElementById('questionsContainer');
+
+    questions.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'question';
+        let html = `<p><b>${index + 1}. ${item.q}</b></p>`;
+        if (item.type === "test") {
+            item.options.forEach(opt => {
+                html += `<label style="display:block;"><input type="radio" name="q${index}" value="${opt}" required> ${opt}</label>`;
+            });
+        } else {
+            html += `<input type="text" name="q${index}" required>`;
+        }
+        div.innerHTML = html;
+        container.appendChild(div);
+    });
+
+    document.getElementById('quizForm').onsubmit = function() {
+        let score = 0;
+        questions.forEach((item, index) => {
+            const field = this.elements[`q${index}`];
+            let userAns = item.type === "test" ? field.value : field.value.trim();
+            if (userAns === item.correct) {
+                score++;
+            }
+        });
+        document.getElementById('totalScoreInput').value = score + " з 20";
+        return true; // Надсилаємо форму
+    };
+</script>
+</body>
+</html>
