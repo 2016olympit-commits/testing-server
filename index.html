@@ -3,96 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тест з алгебри: Автоперевірка</title>
+    <title>Контрольна робота з алгебри</title>
     <style>
-        :root { --primary: #2563eb; --bg: #f8fafc; --text: #1e293b; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: var(--primary); }
-        .question { margin-bottom: 25px; padding: 15px; border-left: 4px solid var(--primary); background: #f1f5f9; border-radius: 0 8px 8px 0; }
-        .options { list-style: none; padding: 0; }
-        input[type="text"] { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; }
-        button { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 6px; cursor: pointer; width: 100%; font-size: 18px; margin-top: 20px; }
-        .hidden { display: none; }
+        :root { --primary: #2563eb; --bg: #f1f5f9; --card: #ffffff; --text: #1e293b; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .quiz-container { width: 90%; max-width: 600px; background: var(--card); padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); position: relative; min-height: 400px; display: flex; flex-direction: column; }
+        h1 { font-size: 24px; color: var(--primary); text-align: center; margin-bottom: 30px; }
+        .step { display: none; flex-direction: column; height: 100%; }
+        .step.active { display: flex; }
+        label { font-weight: 600; margin-bottom: 10px; display: block; }
+        select, input[type="text"] { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px; margin-bottom: 20px; box-sizing: border-box; }
+        .options-list { list-style: none; padding: 0; }
+        .options-list li { margin-bottom: 12px; }
+        .options-list label { font-weight: 400; background: #f8fafc; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; display: block; transition: 0.2s; }
+        .options-list label:hover { background: #e2e8f0; }
+        .options-list input { margin-right: 10px; }
+        .nav-btns { margin-top: auto; display: flex; gap: 10px; }
+        button { flex: 1; padding: 15px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .btn-next { background: var(--primary); color: white; }
+        .btn-prev { background: #cbd5e1; color: var(--text); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .progress { position: absolute; top: 20px; right: 40px; font-size: 14px; color: #64748b; }
+        #success-msg { text-align: center; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>📝 Контрольна робота: Варіант 2</h1>
-    
+<div class="quiz-container">
     <form id="quizForm" action="ТВОЄ_ПОСИЛАННЯ_FORMSPREE" method="POST">
-        <div style="margin-bottom: 20px;">
-            <label><b>Прізвище та Ім'я:</b></label>
-            <input type="text" name="student_name" required>
-        </div>
-
-        <div id="questionsContainer"></div>
-
         <input type="hidden" name="total_score" id="totalScoreInput">
         
-        <button type="submit">Здати роботу</button>
-    </form>
+        <div class="step active" id="step-0">
+            <h1>Вхід до тесту</h1>
+            <label>Оберіть ваш клас:</label>
+            <select name="class_name" required>
+                <option value="">-- Оберіть клас --</option>
+                <option value="8-А">8-А</option>
+                <option value="8-Б">8-Б</option>
+                <option value="8-В">8-В</option>
+                <option value="8-Г">8-Г</option>
+            </select>
+            
+            <label>Прізвище та Ім'я:</label>
+            <input type="text" name="student_name" placeholder="Наприклад: Шевченко Тарас" required>
+            
+            <div class="nav-btns">
+                <button type="button" class="btn-next" onclick="nextStep(0)">Почати тест</button>
+            </div>
+        </div>
 
-    <div id="thanks" class="hidden" style="text-align:center;">
-        <h2>Дякуємо, роботу здано!</h2>
-        <p>Результати надіслані вчителю.</p>
-    </div>
+        <div id="dynamic-questions"></div>
+
+        <div class="step" id="final-step">
+            <h1>Тест завершено!</h1>
+            <p style="text-align:center;">Натисніть кнопку нижче, щоб надіслати свої відповіді вчителю на перевірку.</p>
+            <div class="nav-btns">
+                <button type="button" class="btn-prev" onclick="prevStep()">Назад</button>
+                <button type="submit" class="btn-next">Надіслати роботу</button>
+            </div>
+        </div>
+    </form>
 </div>
 
 <script>
-    // База питань та правильних відповідей
     const questions = [
-        { q: "При якому значенні x вираз (x+4)/(x-7) не має змісту?", type: "test", options: ["-4", "0", "7", "-7"], correct: "7" },
-        { q: "Скоротіть дріб 10a³b²/15ab⁴:", type: "test", options: ["2a²/3b²", "2a²/3b", "5a²/b²", "2a³/3b²"], correct: "2a²/3b²" },
-        { q: "Виконайте додавання дробів 3/a + 5/b:", type: "test", options: ["8/(a+b)", "(3b+5a)/ab", "15/ab", "(3a+5b)/ab"], correct: "(3b+5a)/ab" },
-        { q: "Спростіть вираз x⁻⁷ * x⁴:", type: "test", options: ["x⁻¹¹", "x³", "x⁻³", "x⁻²⁸"], correct: "x⁻³" },
-        { q: "Піднесіть до степеня (m⁻²)⁻⁴:", type: "test", options: ["m⁻⁶", "m⁸", "m⁻⁸", "m⁶"], correct: "m⁸" },
-        { q: "Запишіть число 0,000034 у стандартному вигляді:", type: "test", options: ["3,4*10⁻⁴", "34*10⁻⁶", "3,4*10⁻⁵", "0,34*10⁻⁴"], correct: "3,4*10⁻⁵" },
-        { q: "Знайдіть значення виразу 2⁻³:", type: "test", options: ["-6", "-8", "0,125", "0,25"], correct: "0,125" },
-        { q: "Обчисліть √144 - √49:", type: "test", options: ["5", "10", "13", "7"], correct: "5" },
-        { q: "Винесіть множник з-під знака кореня √72:", type: "test", options: ["2√6", "6√2", "36√2", "3√8"], correct: "6√2" },
-        { q: "Оберіть правильну нерівність:", type: "test", options: ["4√3 < √45", "4√3 = √45", "4√3 > √45", "4√3 < 6"], correct: "4√3 > √45" },
-        { q: "Спростіть вираз 5/√5:", type: "test", options: ["5", "1", "√5", "25"], correct: "√5" },
-        { q: "Які корені має рівняння x² = 0,49?", type: "test", options: ["0,7", "0,07 та -0,07", "0,7 та -0,7", "немає"], correct: "0,7 та -0,7" },
-        { q: "Укажіть коефіцієнти a, b, c для рівняння 5x - 2x² + 3 = 0:", type: "test", options: ["a=5, b=-2, c=3", "a=-2, b=5, c=3", "a=2, b=5, c=3", "a=-2, b=3, c=5"], correct: "a=-2, b=5, c=3" },
-        { q: "Обчисліть дискримінант D для рівняння x² - 4x + 3 = 0:", type: "open", correct: "4" },
-        { q: "Знайдіть менший корінь рівняння x² + 3x - 4 = 0:", type: "open", correct: "-4" },
-        { q: "Знайдіть суму коренів рівняння x² - 7x + 10 = 0:", type: "open", correct: "7" },
-        { q: "Товар коштував 800 грн. Ціна знизилася на 20%. Нова ціна:", type: "open", correct: "640" },
-        { q: "Площа прямокутника 60 м². Довжина на 4 м більша за ширину. Ширина:", type: "open", correct: "6" },
-        { q: "У скільки разів 10⁻⁴ більша за 10⁻⁶?", type: "open", correct: "100" },
-        { q: "Майстер 10 год, учень 15 год. Час спільної роботи (год):", type: "open", correct: "6" }
+        { q: "При якому значенні змінної x раціональний вираз (x+4)/(x-7) не має змісту?", type: "test", options: ["-4", "0", "7", "-7"], correct: "7" },
+        { q: "Скоротіть раціональний дріб: 10a³b² / 15ab⁴", type: "test", options: ["2a²/3b²", "2a²/3b", "5a²/b²", "2a³/3b²"], correct: "2a²/3b²" },
+        { q: "Виконайте дію додавання та зведіть до спільного знаменника: 3/a + 5/b", type: "test", options: ["8/(a+b)", "(3b+5a)/ab", "15/ab", "(3a+5b)/ab"], correct: "(3b+5a)/ab" },
+        { q: "Спростіть вираз, використовуючи властивості степеня: x⁻⁷ * x⁴", type: "test", options: ["x⁻¹¹", "x³", "x⁻³", "x⁻²⁸"], correct: "x⁻³" },
+        { q: "Виконайте піднесення степеня до степеня: (m⁻²)⁻⁴", type: "test", options: ["m⁻⁶", "m⁸", "m⁻⁸", "m⁶"], correct: "m⁸" },
+        { q: "Запишіть число 0,000034 у стандартному вигляді (a * 10ⁿ):", type: "test", options: ["3,4*10⁻⁴", "34*10⁻⁶", "3,4*10⁻⁵", "0,34*10⁻⁴"], correct: "3,4*10⁻⁵" },
+        { q: "Обчисліть значення числового виразу зі степенем: 2⁻³", type: "test", options: ["-6", "-8", "0,125", "0,25"], correct: "0,125" },
+        { q: "Знайдіть значення виразу: √144 - √49", type: "test", options: ["5", "10", "13", "7"], correct: "5" },
+        { q: "Винесіть множник з-під знака кореня у виразі √72:", type: "test", options: ["2√6", "6√2", "36√2", "3√8"], correct: "6√2" },
+        { q: "Порівняйте числа та оберіть правильну нерівність:", type: "test", options: ["4√3 < √45", "4√3 = √45", "4√3 > √45", "4√3 < 6"], correct: "4√3 > √45" },
+        { q: "Спростіть вираз, позбувшись ірраціональності в знаменнику: 5 / √5", type: "test", options: ["5", "1", "√5", "25"], correct: "\u221A5" },
+        { q: "Розв'яжіть рівняння x² = 0,49 та вкажіть його корені:", type: "test", options: ["0,7", "0,07 та -0,07", "0,7 та -0,7", "коренів немає"], correct: "0,7 та -0,7" },
+        { q: "Укажіть коефіцієнти a, b та c для квадратного рівняння 5x - 2x² + 3 = 0:", type: "test", options: ["a=5, b=-2, c=3", "a=-2, b=5, c=3", "a=2, b=5, c=3", "a=-2, b=3, c=5"], correct: "a=-2, b=5, c=3" },
+        { q: "Обчисліть дискримінант D для квадратного рівняння x² - 4x + 3 = 0:", type: "open", correct: "4" },
+        { q: "Знайдіть МЕНШИЙ корінь рівняння x² + 3x - 4 = 0:", type: "open", correct: "-4" },
+        { q: "Використовуючи теорему Вієта, знайдіть суму коренів рівняння x² - 7x + 10 = 0:", type: "open", correct: "7" },
+        { q: "Навушники коштували 800 грн. Під час акції ціна знизилася на 20%. Яка їхня нова ціна?", type: "open", correct: "640" },
+        { q: "Площа прямокутної ділянки 60 м². Довжина на 4 м більша за ширину. Знайдіть ширину ділянки:", type: "open", correct: "6" },
+        { q: "Визначте: у скільки разів об'єкт довжиною 10⁻⁴ м більший за об'єкт довжиною 10⁻⁶ м?", type: "open", correct: "100" },
+        { q: "Майстер може виконати роботу за 10 годин, а його учень — за 15 годин. За скільки годин вони виконають цю роботу разом?", type: "open", correct: "6" }
     ];
 
-    const container = document.getElementById('questionsContainer');
+    let currentStep = 0;
+    const dynamicContainer = document.getElementById('dynamic-questions');
 
-    questions.forEach((item, index) => {
+    // Генерація питань
+    questions.forEach((item, i) => {
+        const stepIndex = i + 1;
         const div = document.createElement('div');
-        div.className = 'question';
-        let html = `<p><b>${index + 1}. ${item.q}</b></p>`;
+        div.className = 'step';
+        div.id = `step-${stepIndex}`;
+        
+        let content = `<div class="progress">Питання ${stepIndex} з ${questions.length}</div>`;
+        content += `<h1>Завдання ${stepIndex}</h1>`;
+        content += `<p><b>${item.q}</b></p>`;
+        
         if (item.type === "test") {
+            content += `<ul class="options-list">`;
             item.options.forEach(opt => {
-                html += `<label style="display:block;"><input type="radio" name="q${index}" value="${opt}" required> ${opt}</label>`;
+                content += `<li><label><input type="radio" name="q${i}" value="${opt}"> ${opt}</label></li>`;
             });
+            content += `</ul>`;
         } else {
-            html += `<input type="text" name="q${index}" required>`;
+            content += `<input type="text" name="q${i}" placeholder="Введіть число..." style="margin-top:20px;">`;
         }
-        div.innerHTML = html;
-        container.appendChild(div);
+        
+        content += `<div class="nav-btns">
+                        <button type="button" class="btn-prev" onclick="prevStep()">Назад</button>
+                        <button type="button" class="btn-next" onclick="nextStep(${stepIndex})">Далі</button>
+                    </div>`;
+        div.innerHTML = content;
+        dynamicContainer.appendChild(div);
     });
 
+    function nextStep(current) {
+        // Перевірка чи заповнено ім'я та обрано клас на кроці 0
+        if (current === 0) {
+            const name = document.querySelector('input[name="student_name"]').value;
+            const cls = document.querySelector('select[name="class_name"]').value;
+            if (!name || !cls) { alert("Заповніть ім'я та оберіть клас!"); return; }
+        }
+        
+        document.getElementById(`step-${current}`).classList.remove('active');
+        currentStep = current + 1;
+        
+        if (currentStep <= questions.length) {
+            document.getElementById(`step-${currentStep}`).classList.add('active');
+        } else {
+            document.getElementById('final-step').classList.add('active');
+        }
+    }
+
+    function prevStep() {
+        document.getElementById(`step-${currentStep}`).classList.remove('active');
+        if (currentStep > questions.length) { // якщо на фінальному кроці
+             currentStep = questions.length;
+        } else {
+             currentStep--;
+        }
+        document.getElementById(`step-${currentStep}`).classList.add('active');
+    }
+
+    // Підрахунок балів перед відправкою
     document.getElementById('quizForm').onsubmit = function() {
         let score = 0;
-        questions.forEach((item, index) => {
-            const field = this.elements[`q${index}`];
-            let userAns = item.type === "test" ? field.value : field.value.trim();
-            if (userAns === item.correct) {
-                score++;
+        questions.forEach((item, i) => {
+            const input = this.elements[`q${i}`];
+            let val = "";
+            if (item.type === "test") {
+                const checked = Array.from(input).find(r => r.checked);
+                val = checked ? checked.value : "";
+            } else {
+                val = input.value.trim();
             }
+            if (val === item.correct) score++;
         });
         document.getElementById('totalScoreInput').value = score + " з 20";
-        return true; // Надсилаємо форму
+        return true;
     };
 </script>
 </body>
