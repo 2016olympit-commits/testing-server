@@ -30,8 +30,8 @@
 <body>
 
 <div class="quiz-container">
-    <form id="quizForm" action="https://formspree.io/f/xjgljnbq" method="POST">
-        <input type="hidden" name="total_score" id="totalScoreInput">
+<form id="quizForm" action="https://script.google.com/macros/s/AKfycbzYA7OhyzaZ9XET6uGltHkVRH1TE-jUcz_Z9IwvrdL8ZC5THNspgIjWSb2q6HZCMOcYmQ/exec" method="POST">        
+    <input type="hidden" name="total_score" id="totalScoreInput">
         
         <div class="step active" id="step-0">
             <h1>Вхід до тесту</h1>
@@ -166,6 +166,35 @@
         document.getElementById('totalScoreInput').value = score + " з 20";
         return true;
     };
+
+    document.getElementById('quizForm').onsubmit = function(e) {
+        e.preventDefault(); // Зупиняємо стандартну відправку
+        
+        let score = 0;
+        questions.forEach((item, i) => {
+            const input = this.elements[`q${i}`];
+            let val = item.type === "test" ? (Array.from(input).find(r => r.checked)?.value || "") : input.value.trim();
+            if (val === item.correct) score++;
+        });
+        
+        document.getElementById('totalScoreInput').value = score + " з 20";
+        
+        const form = this;
+        const data = new FormData(form);
+        
+        // Відправляємо дані в Google Таблицю через fetch
+        fetch(form.action, {
+            method: 'POST',
+            body: new URLSearchParams(data)
+        }).then(() => {
+            document.getElementById('quizForm').classList.add('hidden');
+            document.getElementById('final-step').classList.remove('active');
+            // Показуємо повідомлення про успіх
+            const container = document.querySelector('.quiz-container');
+            container.innerHTML = "<h1>✅ Роботу здано!</h1><p style='text-align:center;'>Ваші результати успішно збережені в таблиці вчителя.</p>";
+        });
+    };
+    
 </script>
 </body>
 </html>
