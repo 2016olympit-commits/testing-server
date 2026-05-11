@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Контрольна робота з алгебри</title>
     <style>
-        :root { --primary: #1e40af; --success: #16a34a; --bg: #f1f5f9; --card: #ffffff; }
+        :root { --primary: #1e40af; --success: #16a34a; --bg: #f1f5f9; --card: #ffffff; --error: #dc2626; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); margin: 0; display: flex; justify-content: center; min-height: 100vh; }
         
         .main-wrapper { display: flex; width: 100%; max-width: 1000px; gap: 20px; padding: 20px; flex-wrap: wrap; align-items: flex-start; }
 
-        /* Бокове меню */
         .sidebar { background: white; width: 220px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: sticky; top: 20px; }
         .sidebar h3 { margin-top: 0; font-size: 16px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
         .nav-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
@@ -18,7 +17,6 @@
         .nav-item.active { border-color: var(--primary); color: var(--primary); }
         .nav-item.answered { background: var(--success); color: white; }
         
-        /* Основний контент */
         .quiz-container { background: var(--card); flex: 1; min-width: 320px; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); min-height: 520px; display: flex; flex-direction: column; }
         
         .fraction { display: inline-block; vertical-align: middle; text-align: center; font-size: 0.9em; margin: 0 4px; line-height: 1.1; }
@@ -31,7 +29,8 @@
         h1 { color: var(--primary); text-align: center; font-size: 24px; margin-bottom: 25px; }
         p.question-text { font-size: 20px; line-height: 1.6; color: #1e293b; margin-bottom: 25px; }
 
-        input[type="text"], select { width: 100%; padding: 14px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+        input[type="text"], select { width: 100%; padding: 14px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 16px; box-sizing: border-box; outline: none; }
+        input[type="text"]:focus { border-color: var(--primary); }
         
         .option { background: #f8fafc; border: 2px solid #e2e8f0; padding: 15px; margin-bottom: 12px; border-radius: 10px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; }
         .option:hover { border-color: var(--primary); }
@@ -42,7 +41,7 @@
         .btn-next { background: var(--primary); color: white; }
         .btn-prev { background: #94a3b8; color: white; }
         
-        .alert-box { color: #dc2626; background: #fef2f2; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; border: 1px solid #fee2e2; }
+        .alert-box { color: var(--error); background: #fef2f2; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; border: 1px solid #fee2e2; }
 
         @media (max-width: 768px) {
             .main-wrapper { flex-direction: column; padding: 10px; }
@@ -56,8 +55,7 @@
 <div class="main-wrapper">
     <div class="sidebar" id="sidebar-nav" style="display:none;">
         <h3>Питання</h3>
-        <div class="nav-grid" id="nav-grid">
-            </div>
+        <div class="nav-grid" id="nav-grid"></div>
     </div>
 
     <div class="quiz-container">
@@ -71,10 +69,11 @@
                     <select name="Клас" id="student_class" required>
                         <option value="">Оберіть...</option>
                         <option value="8-А">8-А</option><option value="8-Б">8-Б</option>
-                        <option value="8-В">8-В</option>
+                        <option value="8-В">8-В</option><option value="8-Г">8-Г</option>
                     </select>
                     <label style="display:block; margin-top:15px; margin-bottom:8px; font-weight:600;">Прізвище та Ім'я:</label>
-                    <input type="text" name="Учень" id="student_name" placeholder="Введіть ПІП" required>
+                    <input type="text" name="Учень" id="student_name" placeholder="Приклад: Шевченко Андрій" required>
+                    <p id="name_error" style="color:var(--error); font-size:13px; margin-top:5px; display:none;">Будь ласка, вкажіть рівно два слова (Прізвище та Ім'я).</p>
                 </div>
                 <div class="nav-btns">
                     <button type="button" class="btn-next" onclick="startQuiz()">Почати тест</button>
@@ -132,9 +131,24 @@
     let current = 0;
 
     function startQuiz() {
-        if (!document.getElementById('student_name').value || !document.getElementById('student_class').value) {
-            return alert("Заповніть дані!");
+        const nameInput = document.getElementById('student_name').value.trim();
+        const classInput = document.getElementById('student_class').value;
+        const errorMsg = document.getElementById('name_error');
+
+        // Перевірка на 2 слова
+        const words = nameInput.split(/\s+/);
+        if (words.length !== 2 || nameInput === "") {
+            errorMsg.style.display = 'block';
+            return;
+        } else {
+            errorMsg.style.display = 'none';
         }
+
+        if (!classInput) {
+            alert("Оберіть клас!");
+            return;
+        }
+
         document.getElementById('sidebar-nav').style.display = 'block';
         initNav();
         move(1);
