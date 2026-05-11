@@ -19,12 +19,11 @@
         .options-list label { font-weight: 400; background: #f8fafc; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; display: block; transition: 0.2s; }
         .options-list label:hover { background: #e2e8f0; }
         .nav-btns { margin-top: auto; display: flex; gap: 10px; padding-top: 20px; }
+        /* Явно вказуємо стилі кнопок */
         button { flex: 1; padding: 15px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; }
         .btn-next { background: var(--primary); color: white; }
         .btn-prev { background: #cbd5e1; color: var(--text); }
         .progress { position: absolute; top: 15px; right: 20px; font-size: 13px; color: #64748b; }
-        .loading { text-align: center; font-size: 18px; color: var(--primary); }
-        .hidden { display: none; }
     </style>
 </head>
 <body>
@@ -56,9 +55,9 @@
 
         <div class="step" id="final-step">
             <h1>Тест завершено!</h1>
-            <p style="text-align:center;">Всі відповіді збережено. Натисніть кнопку, щоб відправити роботу на перевірку вчителю.</p>
+            <p style="text-align:center;">Перевірте свої відповіді. Якщо все правильно — натискайте кнопку нижче.</p>
             <div class="nav-btns">
-                <button type="button" class="btn-prev" onclick="prevStep()">Перевірити відповіді</button>
+                <button type="button" class="btn-prev" onclick="prevStep()">Назад до питань</button>
                 <button type="submit" class="btn-next" id="submitBtn">Надіслати роботу</button>
             </div>
         </div>
@@ -92,6 +91,7 @@
     let currentStep = 0;
     const dynamicContainer = document.getElementById('dynamic-questions');
 
+    // Створюємо слайди
     questions.forEach((item, i) => {
         const stepIndex = i + 1;
         const div = document.createElement('div');
@@ -122,12 +122,14 @@
 
     function nextStep(current) {
         if (current === 0) {
-            const name = document.querySelector('input[name="student_name"]').value;
+            const name = document.querySelector('input[name="student_name"]').value.trim();
             const cls = document.querySelector('select[name="class_name"]').value;
             if (!name || !cls) { alert("Будь ласка, вкажіть Ім'я та Клас!"); return; }
         }
+        
         document.getElementById(`step-${current}`).classList.remove('active');
         currentStep = current + 1;
+        
         if (currentStep <= questions.length) {
             document.getElementById(`step-${currentStep}`).classList.add('active');
         } else {
@@ -136,22 +138,34 @@
     }
 
     function prevStep() {
-        const active = document.querySelector('.step.active');
-        active.classList.remove('active');
+        // Знаходимо поточний активний крок
+        const activeStep = document.querySelector('.step.active');
+        activeStep.classList.remove('active');
+        
         currentStep--;
         document.getElementById(`step-${currentStep}`).classList.add('active');
     }
 
+    // Обробка фінальної відправки
     document.getElementById('quizForm').onsubmit = function(e) {
         e.preventDefault();
+        
         const submitBtn = document.getElementById('submitBtn');
         submitBtn.disabled = true;
-        submitBtn.innerText = "Надсилаю...";
+        submitBtn.innerText = "Надсилаю результат...";
 
         let score = 0;
         questions.forEach((item, i) => {
-            const input = this.elements[`q${i}`];
-            let val = item.type === "test" ? (Array.from(input).find(r => r.checked)?.value || "") : input.value.trim();
+            const inputs = document.getElementsByName(`q${i}`);
+            let val = "";
+            
+            if (item.type === "test") {
+                const checked = Array.from(inputs).find(r => r.checked);
+                val = checked ? checked.value : "";
+            } else {
+                val = inputs[0].value.trim();
+            }
+            
             if (val === item.correct) score++;
         });
         
@@ -163,10 +177,15 @@
             body: new URLSearchParams(data)
         })
         .then(() => {
-            document.getElementById('main-container').innerHTML = "<h1>✅ Роботу здано!</h1><p style='text-align:center;'>Твій результат збережено в журналі вчителя. Можеш закривати сторінку.</p>";
+            document.getElementById('main-container').innerHTML = `
+                <div style="text-align:center; padding: 20px;">
+                    <h1 style="color: #22c55e;">✅ Роботу здано!</h1>
+                    <p style="font-size: 18px;">Твій результат збережено в журналі вчителя.</p>
+                    <p>Можеш закривати сторінку.</p>
+                </div>`;
         })
         .catch(err => {
-            alert("Помилка при відправці. Спробуйте ще раз.");
+            alert("Помилка зв'язку. Спробуйте ще раз.");
             submitBtn.disabled = false;
             submitBtn.innerText = "Надіслати роботу";
         });
