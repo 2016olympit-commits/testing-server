@@ -5,71 +5,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Контрольна робота з алгебри</title>
     <style>
-        :root { --primary: #1e40af; --bg: #f8fafc; --card: #ffffff; --error: #dc2626; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #e2e8f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
-        .quiz-container { background: var(--card); width: 100%; max-width: 650px; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; flex-direction: column; min-height: 520px; }
+        :root { --primary: #1e40af; --success: #16a34a; --bg: #f1f5f9; --card: #ffffff; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); margin: 0; display: flex; justify-content: center; min-height: 100vh; }
+        
+        .main-wrapper { display: flex; width: 100%; max-width: 1000px; gap: 20px; padding: 20px; flex-wrap: wrap; align-items: flex-start; }
+
+        /* Бокове меню */
+        .sidebar { background: white; width: 220px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: sticky; top: 20px; }
+        .sidebar h3 { margin-top: 0; font-size: 16px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
+        .nav-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .nav-item { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; background: #f1f5f9; cursor: pointer; font-weight: 600; font-size: 14px; transition: 0.3s; border: 2px solid transparent; }
+        .nav-item.active { border-color: var(--primary); color: var(--primary); }
+        .nav-item.answered { background: var(--success); color: white; }
+        
+        /* Основний контент */
+        .quiz-container { background: var(--card); flex: 1; min-width: 320px; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); min-height: 520px; display: flex; flex-direction: column; }
         
         .fraction { display: inline-block; vertical-align: middle; text-align: center; font-size: 0.9em; margin: 0 4px; line-height: 1.1; }
         .fraction span { display: block; padding: 0 4px; }
         .fraction .bottom { border-top: 1.5px solid black; }
 
         .step { display: none; flex-direction: column; height: 100%; }
-        .active { display: flex; }
+        .active-step { display: flex; }
         
-        h1 { color: var(--primary); text-align: center; font-size: 24px; margin-bottom: 30px; }
-        p.question-text { font-size: 20px; line-height: 1.6; color: #1e293b; margin-bottom: 25px; font-weight: 500; }
+        h1 { color: var(--primary); text-align: center; font-size: 24px; margin-bottom: 25px; }
+        p.question-text { font-size: 20px; line-height: 1.6; color: #1e293b; margin-bottom: 25px; }
 
-        input[type="text"], select { width: 100%; padding: 14px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 16px; box-sizing: border-box; outline: none; }
-        input[type="text"]:focus { border-color: var(--primary); }
+        input[type="text"], select { width: 100%; padding: 14px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
         
-        .option { background: #f1f5f9; border: 2px solid #e2e8f0; padding: 15px; margin-bottom: 12px; border-radius: 10px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; }
-        .option:hover { border-color: var(--primary); background: #eff6ff; }
-        .option input { margin-right: 15px; transform: scale(1.3); flex-shrink: 0; }
+        .option { background: #f8fafc; border: 2px solid #e2e8f0; padding: 15px; margin-bottom: 12px; border-radius: 10px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; }
+        .option:hover { border-color: var(--primary); }
+        .option input { margin-right: 15px; transform: scale(1.3); }
 
         .nav-btns { margin-top: auto; display: flex; gap: 12px; padding-top: 30px; }
-        button { flex: 1; padding: 16px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        button { flex: 1; padding: 16px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; }
         .btn-next { background: var(--primary); color: white; }
         .btn-prev { background: #94a3b8; color: white; }
         
-        .progress-bar { font-size: 14px; color: #64748b; text-align: center; margin-bottom: 20px; font-weight: 600; }
-        .alert-box { color: var(--error); background: #fef2f2; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; border: 1px solid #fee2e2; }
+        .alert-box { color: #dc2626; background: #fef2f2; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; border: 1px solid #fee2e2; }
+
+        @media (max-width: 768px) {
+            .main-wrapper { flex-direction: column; padding: 10px; }
+            .sidebar { width: 100%; position: relative; top: 0; box-sizing: border-box; }
+            .nav-grid { grid-template-columns: repeat(10, 1fr); }
+        }
     </style>
 </head>
 <body>
 
-<div class="quiz-container">
-    <form id="quizForm" action="ВАШЕ_ПОСИЛАННЯ_НА_СКРИПТ" method="POST">
-        <input type="hidden" name="Разом_балів" id="totalScoreInput">
-
-        <div class="step active" id="step-0">
-            <h1>Контрольна робота з алгебри</h1>
-            <div style="margin-top: 10px;">
-                <label style="display:block; margin-bottom:8px; font-weight:600;">Ваш клас:</label>
-                <select name="Клас" id="student_class" required>
-                    <option value="">Оберіть...</option>
-                    <option value="8-А">8-А</option><option value="8-Б">8-Б</option>
-                    <option value="8-В">8-В</option><option value="8-Г">8-Г</option>
-                </select>
-                <label style="display:block; margin-top:15px; margin-bottom:8px; font-weight:600;">Прізвище та Ім'я:</label>
-                <input type="text" name="Учень" id="student_name" placeholder="Наприклад: Шевченко Андрій" required>
+<div class="main-wrapper">
+    <div class="sidebar" id="sidebar-nav" style="display:none;">
+        <h3>Питання</h3>
+        <div class="nav-grid" id="nav-grid">
             </div>
-            <div class="nav-btns">
-                <button type="button" class="btn-next" onclick="move(1)">Почати тест</button>
-            </div>
-        </div>
+    </div>
 
-        <div id="questions-container"></div>
+    <div class="quiz-container">
+        <form id="quizForm" action="ВАШЕ_ПОСИЛАННЯ_НА_СКРИПТ" method="POST">
+            <input type="hidden" name="Разом_балів" id="totalScoreInput">
 
-        <div class="step" id="step-final">
-            <h1>Перевірка відповідей</h1>
-            <div id="validation-alert" class="alert-box"></div>
-            <p id="final-status-text" style="text-align:center;"></p>
-            <div class="nav-btns">
-                <button type="button" class="btn-prev" onclick="move(questions.length)">Повернутись до питань</button>
-                <button type="submit" class="btn-next" id="submitBtn" disabled>Здати роботу</button>
+            <div class="step active-step" id="step-0">
+                <h1>Контрольна робота №1</h1>
+                <div style="margin-top: 10px;">
+                    <label style="display:block; margin-bottom:8px; font-weight:600;">Клас:</label>
+                    <select name="Клас" id="student_class" required>
+                        <option value="">Оберіть...</option>
+                        <option value="8-А">8-А</option><option value="8-Б">8-Б</option>
+                        <option value="8-В">8-В</option>
+                    </select>
+                    <label style="display:block; margin-top:15px; margin-bottom:8px; font-weight:600;">Прізвище та Ім'я:</label>
+                    <input type="text" name="Учень" id="student_name" placeholder="Введіть ПІП" required>
+                </div>
+                <div class="nav-btns">
+                    <button type="button" class="btn-next" onclick="startQuiz()">Почати тест</button>
+                </div>
             </div>
-        </div>
-    </form>
+
+            <div id="questions-container"></div>
+
+            <div class="step" id="step-final">
+                <h1>Завершення</h1>
+                <div id="validation-alert" class="alert-box"></div>
+                <p id="final-status-text" style="text-align:center;"></p>
+                <div class="nav-btns">
+                    <button type="submit" class="btn-next" id="submitBtn" disabled>Здати роботу</button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script>
@@ -105,84 +128,95 @@
         { id: 20, q: "Максим — 10 год, Андрій — 15 год. Час роботи разом:", type: "open", correct: "6" }
     ];
 
-    const shuffled = shuffle([...questions]);
-    const container = document.getElementById('questions-container');
+    let shuffled = shuffle([...questions]);
+    let current = 0;
 
+    function startQuiz() {
+        if (!document.getElementById('student_name').value || !document.getElementById('student_class').value) {
+            return alert("Заповніть дані!");
+        }
+        document.getElementById('sidebar-nav').style.display = 'block';
+        initNav();
+        move(1);
+    }
+
+    function initNav() {
+        const grid = document.getElementById('nav-grid');
+        grid.innerHTML = '';
+        shuffled.forEach((_, i) => {
+            const btn = document.createElement('div');
+            btn.className = 'nav-item';
+            btn.id = `nav-${i + 1}`;
+            btn.innerText = i + 1;
+            btn.onclick = () => move(i + 1);
+            grid.appendChild(btn);
+        });
+    }
+
+    const qContainer = document.getElementById('questions-container');
     shuffled.forEach((item, i) => {
         const n = i + 1;
         const div = document.createElement('div');
         div.className = 'step';
         div.id = `step-${n}`;
-        let nameInSheet = `Завдання_${item.id}`; 
+        let nameAttr = `Завдання_${item.id}`;
         
-        let inputs = '';
-        if (item.type === 'test') {
-            let opts = shuffle([...item.options]);
-            inputs = opts.map(o => `
+        let inputs = item.type === 'test' ? 
+            shuffle([...item.options]).map(o => `
                 <label class="option">
-                    <input type="radio" name="${nameInSheet}" value="${o.replace(/<[^>]*>/g, '')}"> 
+                    <input type="radio" name="${nameAttr}" value="${o.replace(/<[^>]*>/g, '')}" onchange="markAnswered(${n})"> 
                     <span class="option-text">${o}</span>
-                </label>`).join('');
-        } else {
-            inputs = `<input type="text" name="${nameInSheet}" placeholder="Напишіть вашу відповідь...">`;
-        }
+                </label>`).join('') :
+            `<input type="text" name="${nameAttr}" placeholder="Відповідь..." oninput="markAnswered(${n})">`;
 
-        div.innerHTML = `
-            <div class="progress-bar">Питання ${n} з ${shuffled.length}</div>
-            <p class="question-text">${item.q}</p>
-            ${inputs}
+        div.innerHTML = `<p class="question-text">${item.q}</p>${inputs}
             <div class="nav-btns">
                 <button type="button" class="btn-prev" onclick="move(${n - 1})">Назад</button>
                 <button type="button" class="btn-next" onclick="move(${n + 1})">Далі</button>
-            </div>
-        `;
-        container.appendChild(div);
+            </div>`;
+        qContainer.appendChild(div);
     });
 
-    let current = 0;
     function move(to) {
-        if (to > current && current === 0) {
-            if (!document.getElementById('student_name').value || !document.getElementById('student_class').value) {
-                return alert("Спершу вкажіть прізвище та оберіть клас!");
-            }
-        }
+        if (to < 0) return;
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active-step'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         
         if (to > shuffled.length) {
+            document.getElementById('step-final').classList.add('active-step');
             checkCompletion();
+        } else if (to === 0) {
+            document.getElementById('step-0').classList.add('active-step');
+            document.getElementById('sidebar-nav').style.display = 'none';
+        } else {
+            document.getElementById(`step-${to}`).classList.add('active-step');
+            document.getElementById(`nav-${to}`).classList.add('active');
         }
-
-        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-        let targetId = to > shuffled.length ? 'step-final' : (to < 0 ? 'step-0' : `step-${to}`);
-        document.getElementById(targetId).classList.add('active');
         current = to;
         window.scrollTo(0,0);
+    }
+
+    function markAnswered(stepNum) {
+        document.getElementById(`nav-${stepNum}`).classList.add('answered');
     }
 
     function checkCompletion() {
         let unanswered = [];
         shuffled.forEach((item, i) => {
             const input = document.getElementsByName(`Завдання_${item.id}`);
-            let answered = false;
-            if (item.type === 'test') {
-                answered = Array.from(input).some(r => r.checked);
-            } else {
-                answered = input[0].value.trim() !== "";
-            }
-            if (!answered) unanswered.push(i + 1);
+            let done = item.type === 'test' ? Array.from(input).some(r => r.checked) : input[0].value.trim() !== "";
+            if (!done) unanswered.push(i + 1);
         });
 
         const alertBox = document.getElementById('validation-alert');
         const submitBtn = document.getElementById('submitBtn');
-        const statusText = document.getElementById('final-status-text');
-
         if (unanswered.length > 0) {
             alertBox.style.display = "block";
-            alertBox.innerHTML = `<strong>Увага!</strong> Ви не відповіли на питання: ${unanswered.join(", ")}. <br> Будь ласка, поверніться та завершіть роботу.`;
-            statusText.innerText = "Кнопка відправки заблокована до завершення всіх завдань.";
+            alertBox.innerHTML = `Залишились питання: ${unanswered.join(", ")}`;
             submitBtn.disabled = true;
         } else {
             alertBox.style.display = "none";
-            statusText.innerHTML = "<span style='color:green; font-weight:bold;'>Чудово! Всі завдання виконано. Тепер ви можете здати роботу.</span>";
+            document.getElementById('final-status-text').innerHTML = "<b style='color:green'>Всі завдання виконано!</b>";
             submitBtn.disabled = false;
         }
     }
@@ -190,7 +224,7 @@
     document.getElementById('quizForm').onsubmit = function(e) {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
-        btn.disabled = true; btn.innerText = "Надсилаю...";
+        btn.disabled = true; btn.innerText = "Здаю...";
 
         let score = 0;
         questions.forEach(item => {
@@ -202,10 +236,7 @@
         document.getElementById('totalScoreInput').value = score;
         fetch(this.action, { method: 'POST', body: new URLSearchParams(new FormData(this)) })
         .then(() => {
-            document.querySelector('.quiz-container').innerHTML = `<div style="text-align:center; padding: 40px 0;">
-                <h1 style="color:#16a34a">✅ Готово!</h1>
-                <p>Твої результати успішно відправлені вчителю.</p>
-            </div>`;
+            document.querySelector('.main-wrapper').innerHTML = `<div class="quiz-container" style="text-align:center"><h1>✅ Здано!</h1><p>Результат відправлено вчителю.</p></div>`;
         });
     };
 </script>
