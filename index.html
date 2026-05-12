@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Контрольна робота: 1 варіант</title>
+    <title>Контрольна робота: Алгебра 8 клас</title>
     <style>
         :root { --primary: #1e40af; --success: #16a34a; --bg: #f1f5f9; --card: #ffffff; --error: #dc2626; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); margin: 0; display: flex; justify-content: center; min-height: 100vh; }
         .main-wrapper { display: flex; width: 100%; max-width: 1000px; gap: 20px; padding: 20px; flex-wrap: wrap; align-items: flex-start; }
         .sidebar { background: white; width: 220px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: sticky; top: 20px; }
-        .sidebar h3 { margin-top: 0; font-size: 16px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
+        #timer-display { background: #fef2f2; color: var(--error); padding: 15px; border-radius: 10px; text-align: center; font-size: 24px; font-weight: 800; margin-bottom: 20px; border: 2px solid #fee2e2; }
+        .sidebar h3 { margin-top: 0; font-size: 14px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
+        #user-info-sidebar { margin-bottom: 15px; padding: 10px; text-align: center; font-weight: bold; color: var(--primary); line-height: 1.6; font-size: 13px; white-space: pre-line; }
         .nav-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
         .nav-item { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; background: #f1f5f9; cursor: pointer; font-weight: 600; font-size: 14px; transition: 0.3s; border: 2px solid transparent; }
         .nav-item.active { border-color: var(--primary); color: var(--primary); }
@@ -21,46 +23,57 @@
         .step { display: none; flex-direction: column; height: 100%; }
         .active-step { display: flex; }
         h1 { color: var(--primary); text-align: center; font-size: 24px; margin-bottom: 25px; }
-        p.question-text { font-size: 19px; line-height: 1.6; color: #1e293b; margin-bottom: 25px; }
+        .school-logo { display: block; margin: 0 auto 20px; max-width: 150px; height: auto; }
+        .question-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; margin-bottom: 25px; }
+        p.question-text { font-size: 19px; line-height: 1.6; color: #1e293b; margin: 0; }
+        .points-badge { background: #eff6ff; color: var(--primary); font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px; border: 1px solid #dbeafe; white-space: nowrap; }
         input[type="text"], select { width: 100%; padding: 14px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 16px; box-sizing: border-box; outline: none; }
         .option { background: #f8fafc; border: 2px solid #e2e8f0; padding: 15px; margin-bottom: 12px; border-radius: 10px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; }
-        .option:hover { border-color: var(--primary); }
         .option input { margin-right: 15px; transform: scale(1.3); }
         .nav-btns { margin-top: auto; display: flex; gap: 12px; padding-top: 30px; }
         button { flex: 1; padding: 16px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; }
         .btn-next { background: var(--primary); color: white; }
+        .btn-next:disabled { background: #cbd5e1; cursor: not-allowed; }
         .btn-prev { background: #94a3b8; color: white; }
-        .alert-box { color: var(--error); background: #fef2f2; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; border: 1px solid #fee2e2; }
-        @media (max-width: 768px) { .nav-grid { grid-template-columns: repeat(10, 1fr); } }
     </style>
 </head>
 <body>
 
 <div class="main-wrapper">
     <div class="sidebar" id="sidebar-nav" style="display:none;">
+        <div id="user-info-sidebar"></div>
+        <div id="timer-display">40:00</div>
         <h3>Питання</h3>
         <div class="nav-grid" id="nav-grid"></div>
     </div>
 
     <div class="quiz-container">
-        <form id="quizForm" action="https://script.google.com/macros/s/AKfycbxD0ayES00kkfrejdxWw1hxU0U4pUiUn4aiZ8FIxGC61B0yufZvAIhrhrCW0vUGVjSSUQ/exec" method="POST">
+        <form id="quizForm" action="https://script.google.com/macros/s/AKfycbyNd_7WtkIyN8BV1jZT78IOFHBvchX8_hdI3T6xUZIdk2ZNH1hwZAoytdX9N8SoxZjVyg/exec" method="POST">
             <input type="hidden" name="Разом_балів" id="totalScoreInput">
+            <input type="hidden" name="Варіант" id="variantInput">
 
             <div class="step active-step" id="step-0">
-                <h1>Контрольна робота №1 (1 варіант)</h1>
+                <img src="https://nvkschool34.ck.ua/wp-content/uploads/2023/03/cropped-Dyzajn-bez-nazvy-14.png" alt="Логотип школи" class="school-logo">
+                <h1>Контрольна робота №1 (Алгебра)</h1>
                 <div style="margin-top: 10px;">
-                    <label style="display:block; margin-bottom:8px; font-weight:600;">Оберіть клас:</label>
-                    <select name="Клас" id="student_class" required>
-                        <option value="">Оберіть...</option>
-                        <option value="8-А">8-А</option><option value="8-Б">8-Б</option>
-                        <option value="8-В">8-В</option><option value="8-Г">8-Г</option>
-                    </select>
-                    <label style="display:block; margin-top:15px; margin-bottom:8px; font-weight:600;">Прізвище та Ім'я:</label>
-                    <input type="text" name="Учень" id="student_name" placeholder="Приклад: Петренко Іван" required>
-                    <p id="name_error" style="color:var(--error); font-size:13px; margin-top:5px; display:none;">Помилка: введіть лише Прізвище та Ім'я (2 слова).</p>
+                    <label style="font-weight:600;">Прізвище та Ім'я:</label>
+                    <input type="text" name="Учень" id="student_name" placeholder="Петренко Іван" required oninput="toggleFields(this); saveState();">
+                    <div id="hidden-fields" style="display:none; margin-top:15px;">
+                        <label style="font-weight:600;">Оберіть клас:</label>
+                        <select name="Клас" id="student_class" required onchange="saveState()">
+                            <option value="">Оберіть...</option>
+                            <option value="8-А">8-А</option><option value="8-Б">8-Б</option>
+                            <option value="8-В">8-В</option><option value="8-Г">8-Г</option>
+                        </select>
+                        <label style="display:block; margin-top:15px; font-weight:600;">Оберіть варіант:</label>
+                        <select id="variant-selector" required onchange="saveState()">
+                            <option value="1">Варіант 1</option>
+                            <option value="2">Варіант 2</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="nav-btns">
-                    <button type="button" class="btn-next" onclick="startQuiz()">Почати роботу</button>
+                    <button type="button" class="btn-next" id="start-btn" onclick="startQuiz()" disabled>Почати роботу</button>
                 </div>
             </div>
 
@@ -68,7 +81,6 @@
 
             <div class="step" id="step-final">
                 <h1>Завершення тесту</h1>
-                <div id="validation-alert" class="alert-box"></div>
                 <p id="final-status-text" style="text-align:center;"></p>
                 <div class="nav-btns">
                     <button type="submit" class="btn-next" id="submitBtn" disabled>Здати роботу</button>
@@ -80,141 +92,269 @@
 
 <script>
     function f(n, d) { return `<span class="fraction"><span>${n}</span><span class="bottom">${d}</span></span>`; }
-    function shuffle(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
+
+    const allVariants = {
+        "1": [
+            { id: 1, q: `При яких значеннях змінної вираз ${f('x - 3', 'x + 5')} не має змісту?`, type: "test", options: ["3", "-5", "5", "0"], correct: "-5" },
+            { id: 2, q: `Виконайте дію додавання раціональних дробів та оберіть правильну відповідь: ${f('2', 'x')} + ${f('3', 'y')}`, type: "test", options: [f('2y+3x', 'xy'), f('5', 'x+y'), f('5', 'xy'), f('6', 'xy')], correct: "0" },
+            { id: 3, q: "Спростіть вираз, використовуючи властивість піднесення степеня до степеня: (a⁻²)⁴", type: "test", options: ["a⁻⁸", "a⁻²", "a²", "a⁻¹⁵"], correct: "a⁻⁸" },
+            { id: 4, q: "Винесіть множник з-під знака кореня у виразі √50.", type: "test", options: ["5√2", "2√5", "25√2", "10√5"], correct: "5√2" },
+            { id: 5, q: "Розмір деталі мікросхеми становить 2,5 * 10⁻⁶ метра. Запишіть цей розмір у вигляді звичайного десяткового дробу.", type: "test", options: ["0,000025", "0,0000025", "0,00025", "0,0025"], correct: "0,0000025" },
+            { id: 6, q: "Площа поверхні вірусу в 10⁴ разів менша за площу клітини. Якщо площа клітини дорівнює 10⁻⁸ м², то яка площа вірусу?", type: "test", options: ["10⁻⁴", "10⁻¹²", "10⁻³²", "10⁴"], correct: "10⁻¹²" },
+            { id: 7, q: "Форма для випікання має вигляд квадрата зі стороною a = √50 см. Чи влізе ця форма в духовку, ширина якої становить 7 см?", type: "test", options: ["Так, бо √50 < 7", "Ні, бо √50 > 7", "Влізе рівно впритик", "Неможливо визначити"], correct: "Ні, бо √50 > 7" },
+            { id: 8, q: `Освітленість E обернено пропорційна квадрату відстані r (E = ${f('k','r²')}). Як зміниться освітленість, якщо відстань r збільшити у 3 рази?`, type: "test", options: ["Збільшиться у 3 рази", "Зменшиться у 3 рази", "Зменшиться у 9 разів", "Не зміниться"], correct: "Зменшиться у 9 разів" },
+            { id: 9, q: "Одне з чисел на 2 більше за інше, а їх сума дорівнює 60. Яке рівняння відповідає цій умові, якщо за x позначити менше число?", type: "test", options: ["x+(x+2)=60", "2x+2=60", "x+(x-2)=60", "x+2x=60"], correct: "x+(x+2)=60" },
+            { id: 10, q: "Обчисліть 20% від числа 50.", type: "open", correct: "10" },
+            { id: 11, q: `Витрати описуються формулою C = ${f('5000 + 20n', 'n')}, де n — кількість виробів. Якою буде собівартість при n = 1000?`, type: "open", correct: "25" },
+            { id: 12, q: "Обчисліть значення числового виразу: √225 - √64", type: "open", correct: "7" },
+            { id: 13, q: "Індивідуальна підписка коштує 240 грн/міс. Сімейний план на 5 осіб коштує 400 грн. На скільки грн менше платитиме кожен у групі?", type: "open", correct: "160" },
+            { id: 14, q: "Довжина бактерії 10⁻⁵ м, а вірусу 10⁻⁷ м. У скільки разів бактерія довша за вірус?", type: "open", correct: "100" },
+            { id: 15, q: "Розв'яжіть квадратне рівняння 3x² - 5x + 2 = 0 та знайдіть більший із його коренів.", type: "open", correct: "1" },
+            { id: 16, q: "Число -3 є коренем рівняння x² + px - 12 = 0. Знайдіть другий корінь рівняння.", type: "open", correct: "4" },
+            { id: 17, q: "Ціна навушників 1200 грн. Сьогодні діє знижка 15%. Яка нова ціна навушників?", type: "open", correct: "1020" },
+            { id: 18, q: "Площа прямокутної ділянки 40 м². Довжина на 3 м більша за ширину. Знайдіть ширину ділянки.", type: "open", correct: "5" },
+            { id: 19, q: "Група купує гру за 720 грн. Коли приєдналися ще 2 людини, внесок кожного зменшився на 20 грн. Скільки людей було спочатку?", type: "open", correct: "8" },
+            { id: 20, q: "Максим робить роботу за 10 год, Андрій — на 5 год довше. За скільки годин вони виконають роботу разом?", type: "open", correct: "6" }
+        ],
+        "2": [
+            { id: 21, q: "Яке з наведених чисел належить до множини ірраціональних чисел?", type: "test", options: ["√16", "√0.04", "√5", "0.25"], correct: "√5" },
+            { id: 22, q: `Виконайте скорочення раціонального дробу: ${f('7x - 7y', '7')}`, type: "test", options: ["x - y", "7x - y", "7(x-y)", "x+y"], correct: "x - y" },
+            { id: 23, q: "Чому дорівнює сума коренів квадратного рівняння x² - 5x + 6 = 0 за теоремою Вієта?", type: "test", options: ["5", "-5", "6", "-6"], correct: "5" },
+            { id: 24, q: `Вкажіть область визначення функції: y = ${f('5', 'x - 9')}`, type: "test", options: ["x ≠ 9", "x ≠ -9", "x > 9", "x < 9"], correct: "x ≠ 9" },
+            { id: 25, q: "Обчисліть значення виразу з від'ємним показником: 2⁻³", type: "test", options: ["1/8", "1/6", "-8", "-6"], correct: "1/8" },
+            { id: 26, q: "Оберіть повне квадратне рівняння:", type: "test", options: ["x² - 5x + 1 = 0", "2x - 5 = 0", "5/x = 2", "x³ = 1"], correct: "x² - 5x + 1 = 0" },
+            { id: 27, q: "Обчисліть значення числового виразу: (-3)³ + 20", type: "test", options: ["-7", "47", "11", "-1"], correct: "-7" },
+            { id: 28, q: `Вкажіть функцію, графіком якої є гіпербола.`, type: "test", options: [f('5','x'), "y = x²", "y = 5x", "y = x+5"], correct: "0" },
+            { id: 29, q: "Спростіть вираз з арифметичними квадратними коренями: √a * √a", type: "test", options: ["a", "a²", "2a", "√2a"], correct: "a" },
+            { id: 30, q: "Знайдіть корінь ірраціонального рівняння: √x = 6", type: "test", options: ["36", "3", "12", "6"], correct: "36" },
+            { id: 31, q: "Обчисліть значення виразу: √(25 * 0.04 * 100)", type: "open", correct: "10" },
+            { id: 32, q: "Знайдіть значення дискримінанта (D) для рівняння: x² - 4x + 3 = 0", type: "open", correct: "4" },
+            { id: 33, q: "Запишіть показник n, якщо число 0.00045 представлено як 4.5 * 10ⁿ.", type: "open", correct: "-4" },
+            { id: 34, q: "Виконайте спрощення та знайдіть значення (x + 3)² - (x - 2)(x + 2) при x = 1.", type: "open", correct: "19" },
+            { id: 35, q: "Обчисліть значення виразу: (√5 - 2)(√5 + 2) + √16", type: "open", correct: "5" },
+            { id: 36, q: "Чому дорівнює добуток коренів квадратного рівняння 2x² - 8x + 10 = 0?", type: "open", correct: "5" },
+            { id: 37, q: "Масштаб 1:1 000 000. Відстань на карті 4 см. Обчисліть реальну відстань у км.", type: "open", correct: "40" },
+            { id: 38, q: "Катер пройшов 30 км за течією за 2 год та ту ж відстань проти за 3 год. Знайдіть власну швидкість катера.", type: "open", correct: "12.5" },
+            { id: 39, q: "Знайдіть ціле k, при якому корінь kx = 15 є натуральним і лежить у проміжку (4; 6).", type: "open", correct: "3" },
+            { id: 40, q: "Сума двох чисел 12, а їх добуток 35. Знайдіть різницю між більшим і меншим числом.", type: "open", correct: "2" }
+        ],
+        "3": [
+            { id: 41, q: `При яких значеннях змінної a вираз ${f('a + 2', 'a - 7')} не має змісту?`, type: "test", options: ["2", "-2", "7", "0"], correct: "7" },
+            { id: 42, q: `Виконайте дію віднімання раціональних дробів: ${f('5', 'm')} - ${f('2', 'n')}`, type: "test", options: [f('5n-2m', 'mn'), f('3', 'm-n'), f('3', 'mn'), f('10', 'mn')], correct: "0" },
+            { id: 43, q: "Спростіть вираз, використовуючи властивість степеня: (b⁻³)³", type: "test", options: ["b⁻⁶", "b⁰", "b⁻⁹", "b⁹"], correct: "b⁻⁹" },
+            { id: 44, q: "Винесіть множник з-під знака кореня у виразі √72.", type: "test", options: ["6√2", "2√6", "36√2", "12√2"], correct: "6√2" },
+            { id: 45, q: "Товщина паперу становить 1,2 * 10⁻⁴ метра. Запишіть це число у вигляді десяткового дробу.", type: "test", options: ["0,0012", "0,00012", "0,012", "0,000012"], correct: "0,00012" },
+            { id: 46, q: "Об'єм пам'яті чипа в 10³ рази більший за старий (10⁻⁶ Гб). Який об'єм нового чипа?", type: "test", options: ["10⁻³ Гб", "10⁻⁹ Гб", "10³ Гб", "10⁻² Гб"], correct: "10⁻³ Гб" },
+            { id: 47, q: "Сторона квадрата дорівнює √40 см. Чи пройде цей квадрат у квадратний отвір зі стороною 6 см?", type: "test", options: ["Так, бо √40 < 6", "Ні, бо √40 > 6", "Впритик", "Невідомо"], correct: "Ні, бо √40 > 6" },
+            { id: 48, q: `Як зміниться сила притягання E = ${f('k','r²')}, якщо відстань r збільшити у 2 рази?`, type: "test", options: ["Збільшиться у 2", "Зменшиться у 2", "Зменшиться у 4", "Не зміниться"], correct: "Зменшиться у 4" },
+            { id: 49, q: "Одне число втричі більше за інше, а їх сума дорівнює 40. Яке рівняння відповідає умові (x - менше число)?", type: "test", options: ["x+3x=40", "x+(x+3)=40", "3x=40", "x+x/3=40"], correct: "x+3x=40" },
+            { id: 50, q: "Знайдіть 15% від числа 60.", type: "open", correct: "9" },
+            { id: 51, q: `Обчисліть значення виразу y = ${f('2000-10n', 'n')}, якщо n = 50.`, type: "open", correct: "30" },
+            { id: 52, q: "Обчисліть значення числового виразу: √144 + √121", type: "open", correct: "23" },
+            { id: 53, q: "Абонемент коштує 800 грн. На трьох — ціна 600 грн за кожного. На скільки грн дешевше?", type: "open", correct: "200" },
+            { id: 54, q: "Маса молекули води 3*10⁻²⁶ кг, кисню 5*10⁻²⁶ кг. У скільки разів кисень важчий?", type: "open", correct: "1.6" },
+            { id: 55, q: "Знайдіть менший корінь квадратного рівняння x² - 7x + 10 = 0.", type: "open", correct: "2" },
+            { id: 56, q: "Знайдіть значення c у рівнянні x² - 8x + c = 0, якщо один із коренів дорівнює 3.", type: "open", correct: "15" },
+            { id: 57, q: "Смартфон коштував 8000 грн. Ціна знизилася на 20%. Яка нова ціна?", type: "open", correct: "6400" },
+            { id: 58, q: "Периметр прямокутника 30 см, а площа 50 см². Знайдіть більшу сторону.", type: "open", correct: "10" },
+            { id: 59, q: "Оренда автобуса 1200 грн. Якби поїхало на 2 особи більше, внесок кожного впав би на 20 грн. Скільки людей?", type: "open", correct: "10" },
+            { id: 60, q: "Одна помпа за 4 год, інша за 12 год. За скільки годин вони викачають разом?", type: "open", correct: "3" }
+        ],
+        "4": [
+            { id: 61, q: `Яка з точок належить графіку функції y = ${f('12','x')}?`, type: "test", options: ["(2; 4)", "(3; 4)", "(0; 12)", "(-2; 6)"], correct: "(3; 4)" },
+            { id: 62, q: "Обчисліть значення виразу: √(0,09 * 1600).", type: "test", options: ["120", "12", "1,2", "3,6"], correct: "12" },
+            { id: 63, q: "Розв’яжіть неповне квадратне рівняння x² - 49 = 0 та вкажіть додатний корінь.", type: "test", options: ["7", "-7", "49", "немає"], correct: "7" },
+            { id: 64, q: "Подайте вираз (m⁻³)⁻² : m⁴ у вигляді степеня з основою m.", type: "test", options: ["m⁻²", "m¹⁰", "m²", "m⁻¹⁰"], correct: "m²" },
+            { id: 65, q: `Спростіть раціональний дріб: ${f('a² - 25', 'a - 5')}`, type: "test", options: [f('a + 5'), "a - 5", "a² + 5", "5"], correct: "0" },
+            { id: 66, q: "Скільки коренів має квадратне рівняння x² + 2x + 5 = 0?", type: "test", options: ["один", "два", "жодного", "безліч"], correct: "жодного" },
+            { id: 67, q: "Якою функцією описується залежність сторони квадрата a від його площі S?", type: "test", options: ["a = S²", "a = √S", "a = 2S", "a = S/4"], correct: "a = √S" },
+            { id: 68, q: "Обчисліть значення виразу: 5 * √0,04 + 2", type: "test", options: ["3", "2,2", "4", "12"], correct: "3" },
+            { id: 69, q: "Чому дорівнює сума коренів рівняння x² - 15x + 3 = 0 відповідно до теореми Вієта?", type: "test", options: ["15", "-15", "3", "-3"], correct: "15" },
+            { id: 70, q: "Яке з наведених чисел записане у стандартному вигляді?", type: "test", options: ["12 * 10³", "0,5 * 10⁻²", "3,4 * 10⁵", "1,23 * 100²"], correct: "3,4 * 10⁵" },
+            { id: 71, q: "Знайдіть значення функції y = √(x + 11), якщо аргумент x = 25.", type: "open", correct: "6" },
+            { id: 72, q: "Спростіть числовий вираз: √18 * √2", type: "open", correct: "6" },
+            { id: 73, q: "Знайдіть від’ємний корінь квадратного рівняння 2x² = 72.", type: "open", correct: "-6" },
+            { id: 74, q: "Спростіть вираз, використовуючи формулу різниці квадратів: (3 - √5)(3 + √5)", type: "open", correct: "4" },
+            { id: 75, q: "Знайдіть суму коренів рівняння x² - 6x = 0.", type: "open", correct: "6" },
+            { id: 76, q: "Обчисліть значення дискримінанта (D) для квадратного рівняння 3x² - 4x - 4 = 0.", type: "open", correct: "64" },
+            { id: 77, q: `При якому значенні k графік функції y = ${f('k','x')} проходить через точку A(-3; 4)?`, type: "open", correct: "-12" },
+            { id: 78, q: "Дизайнер створює банер площею 30 м². Довжина банера на 1 метр більша за його ширину. Знайдіть довжину БІЛЬШОЇ сторони.", type: "open", correct: "6" },
+            { id: 79, q: "Для поливу використовують два насоси. Перший качає за 6 год, другий за 3 год. За скільки годин вони викачають воду разом?", type: "open", correct: "2" },
+            { id: 80, q: "Гальмівний шлях описується формулою S = 0,02v². Визначте швидкість v (км/год), якщо гальмівний шлях склав 72 метри.", type: "open", correct: "60" }
+        ]
+    };
+
+    let activeQ = [];
+    let currentStep = 0;
+    let timeLeft = 2400;
+    let timerInt;
+
+    function toggleFields(el) {
+        const words = el.value.trim().split(/\s+/);
+        const startBtn = document.getElementById('start-btn');
+        const hiddenFields = document.getElementById('hidden-fields');
+        if (words.length >= 2) { hiddenFields.style.display = 'block'; startBtn.disabled = false; }
+        else { hiddenFields.style.display = 'none'; startBtn.disabled = true; }
     }
 
-    const questions = [
-        { id: 1, q: `При яких значеннях змінної вираз ${f('x - 3', 'x + 5')} не має змісту?`, type: "test", options: ["3", "-5", "5", "0"], correct: "-5" },
-        { id: 2, q: `Виконайте дію додавання: ${f('2', 'x')} + ${f('3', 'y')}`, type: "test", options: [f('5', 'x+y'), f('5', 'xy'), f('2y+3x', 'xy'), f('6', 'xy')], correct: "(2y+3x)/xy" },
-        { id: 3, q: "Спростіть вираз: (a⁻²)⁴", type: "test", options: ["a⁻⁸", "a⁻²", "a²", "a⁻¹⁵"], correct: "a⁻⁸" },
-        { id: 4, q: "Винесіть множник з-під знака кореня: √50", type: "test", options: ["5√2", "2√5", "25√2", "10√5"], correct: "5√2" },
-        { id: 5, q: "Розмір деталі мікросхеми становить 2,5 * 10⁻⁶ метра. Запишіть цей розмір у вигляді десяткового дробу.", type: "test", options: ["0,000025 м", "0,0000025 м", "0,00025 м", "0,0025 м"], correct: "0,0000025 м" },
-        { id: 6, q: "Площа поверхні вірусу в 10⁴ разів менша за площу клітини. Якщо площа клітини 10⁻⁸ м², то яка площа вірусу?", type: "test", options: ["10⁻⁴ м²", "10⁻¹² м²", "10⁻³² м²", "10⁴ м²"], correct: "10⁻¹² м²" },
-        { id: 7, q: "Форма для випікання має вигляд квадрата зі стороною a = √50 см. Чи влізе ця форма в духовку, ширина якої 7 см?", type: "test", options: ["Так, бо √50 < 7", "Ні, бо √50 > 7", "Влізе рівно впритик", "Неможливо визначити"], correct: "Ні, бо √50 > 7" },
-        { id: 8, q: `Освітленість поверхні E обернено пропорційна квадрату відстані r до джерела світла (E = ${f('k', 'r²')}). Як зміниться освітленість, якщо відстань збільшити у 3 рази?`, type: "test", options: ["Збільшиться у 3 рази", "Зменшиться у 3 рази", "Зменшиться у 9 разів", "Не зміниться"], correct: "Зменшиться у 9 разів" },
-        { id: 9, q: "Одне з чисел на 2 більше за інше, а їх сума дорівнює 60. Яке рівняння відповідає цій умові, якщо за x позначити менше число?", type: "test", options: ["x+(x+2)=60", "5x+5(x+2)=60", "x/5+(x+2)/5=60", "x(x+2)=60"], correct: "x+(x+2)=60" },
-        { id: 10, q: "Обчисліть 20% від 50.", type: "open", correct: "10" },
-        { id: 11, q: `Витрати на виробництво партії сувенірів описуються формулою C = ${f('5000 + 20n', 'n')}, де n — кількість виробів, а С — собівартість одного виробу. Якою буде собівартість, якщо виготовити 1000 штук?`, type: "open", correct: "25" },
-        { id: 12, q: "Обчисліть значення виразу: √225 - √64", type: "open", correct: "7" },
-        { id: 13, q: "Ви з друзями замовили піцу на суму 1200 грн. Чек ділиться порівну. Як зміниться сума до оплати для вас, якщо замість 4 людей прийде 8?", type: "open", correct: "зменшиться у 2 рази" },
-        { id: 14, q: "Довжина бактерії 10⁻⁵ м, а вірусу 10⁻⁷ м. У скільки разів бактерія довша за вірус?", type: "open", correct: "100" },
-        { id: 15, q: "Розв'яжіть рівняння 3x² - 5x + 2 = 0 та знайдіть більший із коренів.", type: "open", correct: "1" },
-        { id: 16, q: "Число -3 є одним із коренів рівняння x² + px - 12 = 0. Знайдіть другий корінь рівняння.", type: "open", correct: "4" },
-        { id: 17, q: "Навушники коштували 1200 грн. Сьогодні діє знижка 15%. Яка нова ціна навушників?", type: "open", correct: "1020" },
-        { id: 18, q: "Площа прямокутної ділянки 40 м². Довжина на 3 м більша за ширину. Знайдіть ширину ділянки.", type: "open", correct: "5" },
-        { id: 19, q: "Група друзів купує гру за 720 грн. Коли приєдналися ще 2 людини, внесок кожного зменшився на 20 грн. Скільки друзів було спочатку?", type: "open", correct: "8" },
-        { id: 20, q: "Максим пише код за 10 год. Андрію потрібно на 5 год більше. За скільки годин вони виконають роботу разом?", type: "open", correct: "6" }
-    ];
+    function fixCase(name) {
+        return name.trim().split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+    }
 
-    let shuffled = shuffle([...questions]);
-    let current = 0;
+    function getWeight(id) {
+        let n = id;
+        if (n > 60) n -= 60; else if (n > 40) n -= 40; else if (n > 20) n -= 20;
+        if (n <= 10) return 1; if (n <= 13) return 1.5; if (n <= 17) return 2; if (n === 18) return 2.5; return 3;
+    }
 
-    function startQuiz() {
-        const nameVal = document.getElementById('student_name').value.trim();
-        const words = nameVal.split(/\s+/);
-        if (words.length !== 2) {
-            document.getElementById('name_error').style.display = 'block';
-            return;
+    function saveState() {
+        if (!activeQ.length) return;
+        const answers = {};
+        activeQ.forEach(q => {
+            const ins = document.getElementsByName('Q_' + q.id);
+            if (q.type === 'test') {
+                const checked = Array.from(ins).find(r => r.checked);
+                if (checked) answers[q.id] = checked.value;
+            } else {
+                if (ins[0] && ins[0].value) answers[q.id] = ins[0].value;
+            }
+        });
+        const state = {
+            name: document.getElementById('student_name').value,
+            class: document.getElementById('student_class').value,
+            variant: document.getElementById('variant-selector').value,
+            currentStep: currentStep,
+            answers: answers,
+            timeLeft: timeLeft,
+            isStarted: document.getElementById('sidebar-nav').style.display === 'block'
+        };
+        localStorage.setItem('algebra_quiz_save', JSON.stringify(state));
+    }
+
+    function loadState() {
+        const saved = localStorage.getItem('algebra_quiz_save');
+        if (!saved) return;
+        const state = JSON.parse(saved);
+        document.getElementById('student_name').value = state.name || "";
+        toggleFields(document.getElementById('student_name'));
+        document.getElementById('student_class').value = state.class || "";
+        document.getElementById('variant-selector').value = state.variant || "1";
+        if (state.isStarted) {
+            startQuiz(true);
+            timeLeft = state.timeLeft;
+            for (const id in state.answers) {
+                const val = state.answers[id];
+                const ins = document.getElementsByName('Q_' + id);
+                if (ins.length) {
+                    if (ins[0].type === 'radio') {
+                        Array.from(ins).forEach(r => { if (r.value === val) r.checked = true; });
+                    } else {
+                        ins[0].value = val;
+                    }
+                    const qIdx = activeQ.findIndex(q => q.id == id);
+                    if (qIdx !== -1) mark(qIdx + 1);
+                }
+            }
+            move(state.currentStep);
         }
-        if (!document.getElementById('student_class').value) {
-            alert("Оберіть клас!"); return;
-        }
-        document.getElementById('name_error').style.display = 'none';
+    }
+
+    function startQuiz(isReload = false) {
+        const nameInput = document.getElementById('student_name');
+        if (!isReload) nameInput.value = fixCase(nameInput.value);
+        const v = document.getElementById('variant-selector').value;
+        const c = document.getElementById('student_class').value;
+        activeQ = allVariants[v];
+        
+        document.getElementById('user-info-sidebar').innerHTML = `<div>${nameInput.value}</div><div>Клас: ${c}</div><div>Варіант ${v}</div>`;
+        document.getElementById('variantInput').value = "Варіант " + v;
+        document.getElementById('step-0').classList.remove('active-step');
         document.getElementById('sidebar-nav').style.display = 'block';
-        initNav();
-        move(1);
+
+        renderNavAndQuestions();
+        if (!isReload) move(1);
+        
+        clearInterval(timerInt);
+        timerInt = setInterval(() => {
+            timeLeft--;
+            let m = Math.floor(timeLeft/60), s = timeLeft%60;
+            document.getElementById('timer-display').innerText = `${m}:${s<10?'0':''}${s}`;
+            if(timeLeft % 5 === 0) saveState();
+            if(timeLeft <= 0) submitData();
+        }, 1000);
     }
 
-    function initNav() {
-        const grid = document.getElementById('nav-grid');
-        grid.innerHTML = '';
-        shuffled.forEach((_, i) => {
+    function renderNavAndQuestions() {
+        const navGrid = document.getElementById('nav-grid');
+        navGrid.innerHTML = '';
+        const qContainer = document.getElementById('questions-container');
+        qContainer.innerHTML = '';
+        activeQ.forEach((q, i) => {
+            const n = i + 1;
             const btn = document.createElement('div');
-            btn.className = 'nav-item'; btn.id = `nav-${i+1}`;
-            btn.innerText = i+1; btn.onclick = () => move(i+1);
-            grid.appendChild(btn);
+            btn.className = 'nav-item'; btn.id = `nav-${n}`;
+            btn.innerText = n; btn.onclick = () => move(n);
+            navGrid.appendChild(btn);
+            const div = document.createElement('div');
+            div.className = 'step'; div.id = `step-${n}`;
+            
+            let html = q.type === 'test' ? 
+                q.options.map((o, idx) => `<label class="option"><input type="radio" name="Q_${q.id}" value="${o.includes('<span') ? idx : o}" onchange="mark(${n}); saveState();"> <span>${o}</span></label>`).join('') :
+                `<input type="text" name="Q_${q.id}" placeholder="Впишіть число..." oninput="mark(${n}); saveState();">`;
+            
+            div.innerHTML = `<div class="question-header"><p class="question-text">${q.q}</p><span class="points-badge">${getWeight(q.id)} б.</span></div>
+                             ${html}<div class="nav-btns"><button type="button" class="btn-prev" onclick="move(${n-1})">Назад</button>
+                             <button type="button" class="btn-next" onclick="move(${n+1})">Далі</button></div>`;
+            qContainer.appendChild(div);
         });
     }
 
-    const qContainer = document.getElementById('questions-container');
-    shuffled.forEach((item, i) => {
-        const n = i + 1;
-        const div = document.createElement('div');
-        div.className = 'step'; div.id = `step-${n}`;
-        let inputs = item.type === 'test' ? 
-            shuffle([...item.options]).map(o => `
-                <label class="option">
-                    <input type="radio" name="Завдання_${item.id}" value="${o.replace(/<[^>]*>/g, '')}" onchange="markAnswered(${n})"> 
-                    <span class="option-text">${o}</span>
-                </label>`).join('') :
-            `<input type="text" name="Завдання_${item.id}" placeholder="Впишіть число..." oninput="markAnswered(${n})">`;
-        div.innerHTML = `<p class="question-text">${item.q}</p>${inputs}
-            <div class="nav-btns">
-                <button type="button" class="btn-prev" onclick="move(${n-1})">Назад</button>
-                <button type="button" class="btn-next" onclick="move(${n+1})">Далі</button>
-            </div>`;
-        qContainer.appendChild(div);
-    });
-
-    function move(to) {
+    function move(n) {
+        currentStep = n;
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active-step'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        if (to > shuffled.length) {
-            document.getElementById('step-final').classList.add('active-step');
-            checkCompletion();
-        } else if (to === 0) {
-            document.getElementById('step-0').classList.add('active-step');
-            document.getElementById('sidebar-nav').style.display = 'none';
-        } else {
-            document.getElementById(`step-${to}`).classList.add('active-step');
-            document.getElementById(`nav-${to}`).classList.add('active');
-        }
-        current = to; window.scrollTo(0,0);
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        if (n > activeQ.length) { document.getElementById('step-final').classList.add('active-step'); check(); }
+        else if (n <= 0) { document.getElementById('step-0').classList.add('active-step'); document.getElementById('sidebar-nav').style.display = 'none'; }
+        else { document.getElementById('step-'+n).classList.add('active-step'); document.getElementById('nav-'+n).classList.add('active'); }
+        saveState();
+        window.scrollTo(0,0);
     }
 
-    function markAnswered(n) { document.getElementById(`nav-${n}`).classList.add('answered'); }
+    function mark(n) { document.getElementById('nav-'+n).classList.add('answered'); }
 
-    function checkCompletion() {
-        let unanswered = [];
-        shuffled.forEach((item, i) => {
-            const input = document.getElementsByName(`Завдання_${item.id}`);
-            let done = item.type === 'test' ? Array.from(input).some(r => r.checked) : input[0].value.trim() !== "";
-            if (!done) unanswered.push(i + 1);
+    function check() {
+        let all = true;
+        activeQ.forEach(q => {
+            const ins = document.getElementsByName('Q_'+q.id);
+            if (q.type === 'test' ? !Array.from(ins).some(r=>r.checked) : !ins[0].value.trim()) all = false;
         });
-        const alertBox = document.getElementById('validation-alert');
-        const submitBtn = document.getElementById('submitBtn');
-        if (unanswered.length > 0) {
-            alertBox.style.display = "block";
-            alertBox.innerHTML = `Ви пропустили питання: ${unanswered.join(", ")}`;
-            submitBtn.disabled = true;
-        } else {
-            alertBox.style.display = "none";
-            document.getElementById('final-status-text').innerHTML = "<b style='color:green'>Всі відповіді вказано!</b>";
-            submitBtn.disabled = false;
-        }
+        document.getElementById('submitBtn').disabled = !all;
+        document.getElementById('final-status-text').innerHTML = all ? "<b style='color:green'>Все заповнено!</b>" : "<b style='color:red'>Є пропущені питання</b>";
     }
 
-    document.getElementById('quizForm').onsubmit = function(e) {
-        e.preventDefault();
-        const btn = document.getElementById('submitBtn');
-        btn.disabled = true; btn.innerText = "Надсилаю...";
+    function submitData() {
+        clearInterval(timerInt);
+        const form = document.getElementById('quizForm');
         let score = 0;
-        questions.forEach(item => {
-            const input = this.elements[`Завдання_${item.id}`];
-            let ans = item.type === 'test' ? (Array.from(input).find(r => r.checked)?.value || "") : input.value.trim();
-            if (ans.toLowerCase() === item.correct.toLowerCase()) score++;
+        activeQ.forEach(q => {
+            const ins = document.getElementsByName('Q_'+q.id);
+            let val = q.type === 'test' ? (Array.from(ins).find(r=>r.checked)?.value || "") : ins[0].value.trim();
+            if (val.toString().toLowerCase().trim() === q.correct.toString().toLowerCase().trim()) score += getWeight(q.id);
         });
         document.getElementById('totalScoreInput').value = score;
-        fetch(this.action, { method: 'POST', body: new URLSearchParams(new FormData(this)) })
+        document.getElementById('variantInput').value = "Варіант " + document.getElementById('variant-selector').value;
+        document.getElementById('submitBtn').innerText = "Надсилаю...";
+        document.getElementById('submitBtn').disabled = true;
+
+        fetch(form.action, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(new FormData(form)) })
         .then(() => {
-            document.querySelector('.main-wrapper').innerHTML = `<div class="quiz-container" style="text-align:center; padding:50px;"><h1>✅ Роботу здано!</h1><p>Твій результат відправлено вчителю.</p></div>`;
+            localStorage.clear();
+            document.querySelector('.main-wrapper').innerHTML = `<div class="quiz-container" style="text-align:center; padding:100px 20px;"><h1>✅ Здано!</h1><p style="font-size:18px;">Вашу роботу успішно надіслано вчителю для перевірки.</p></div>`;
         });
-    };
+    }
+
+    document.getElementById('quizForm').onsubmit = (e) => { e.preventDefault(); submitData(); };
+    window.onload = loadState;
 </script>
 </body>
 </html>
